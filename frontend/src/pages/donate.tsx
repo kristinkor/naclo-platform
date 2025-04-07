@@ -44,11 +44,12 @@ export default function SupportNACLOPage() {
               rel="noopener noreferrer"
               style={{ color: '#ff9a04', fontWeight: 'bold' }}
             >
-              NACLO's giving page
+              NACLO&rsquo;s giving page
             </a>{' '}
             at Carnegie Mellon University, which is connected to the NACLO
             account.
           </Typography>
+
           <Button
             variant="contained"
             color="warning"

@@ -95,7 +95,7 @@ export default function Login() {
         </Link>
       </Typography>
       <Typography sx={{ marginTop: '10px', textAlign: 'center' }}>
-        Don't have an account?{' '}
+        Don&rsquo;t have an account?{' '}
         <Link href="/register" underline="hover">
           Create one
         </Link>

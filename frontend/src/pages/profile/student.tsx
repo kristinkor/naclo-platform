@@ -10,8 +10,16 @@ import {
   CircularProgress,
 } from '@mui/material'
 
+type StudentUser = {
+  firstName: string
+  lastName: string
+  email: string
+  site?: string | null
+  pastComp?: number
+}
+
 export default function StudentProfile() {
-  const [user, setUser] = useState<any>(null)
+  const [user, setUser] = useState<StudentUser | null>(null)
   const [loading, setLoading] = useState(true)
   const router = useRouter()
 
@@ -30,7 +38,7 @@ export default function StudentProfile() {
         router.push('/login')
       })
       .finally(() => setLoading(false))
-  }, [])
+  }, [router]) // ✅ router added to dependencies
 
   if (loading) {
     return (

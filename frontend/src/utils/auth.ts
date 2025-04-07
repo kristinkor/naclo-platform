@@ -29,38 +29,32 @@ export const handleSubmit = async (
     grade?: number
     parentEmail?: string
     parentApproved?: boolean
-    roleId?: number // optional: allow override for Host or other roles
+    roleId?: number
   },
   setError: (error: string) => void,
   isRegister: boolean,
   router: NextRouter
-): Promise<any> => {
+): Promise<null | Record<string, any> | void> => {
   e.preventDefault()
   setError('')
 
   try {
     if (isRegister) {
-      // Allow optional role override, default to Student (3)
       const roleId = form.roleId ?? 3
-
       await api.post('/auth/register', { ...form, roleId })
-
-      router.push('/login') // Registration always redirects to login
+      router.push('/login')
       return
     }
 
-    // Login flow
     const res = await api.post('/auth/login', {
       email: form.email,
       password: form.password,
     })
 
     const { token, user } = res.data
-
     localStorage.setItem('token', token)
     setAuthToken(token)
 
-    // Optional: return user for role-based redirection
     return user
   } catch (err) {
     if (axios.isAxiosError(err)) {
@@ -80,7 +74,7 @@ export const handleSubmit = async (
       setError('An unexpected error occurred.')
     }
 
-    return null // Still rethrow to handle redirect or tracking
+    return null
   }
 }
 
@@ -89,7 +83,7 @@ export const getUserProfile = async () => {
   try {
     const res = await api.get('/users/me')
     return res.data
-  } catch (err) {
+  } catch {
     return null
   }
 }

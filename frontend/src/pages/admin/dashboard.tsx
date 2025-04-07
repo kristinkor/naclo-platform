@@ -19,20 +19,43 @@ import {
   DialogTitle,
 } from '@mui/material'
 
+type User = {
+  id: number
+  firstName: string
+  lastName: string
+  email: string
+  roleId: number
+}
+
+type Contest = {
+  id: number
+  name: string
+  year: number
+  round: number
+  status: string
+}
+
+type NewContest = {
+  name: string
+  year: string
+  round: string
+  status: string
+}
+
 export default function AdminDashboard() {
-  const [users, setUsers] = useState<any[]>([])
-  const [contests, setContests] = useState<any[]>([])
+  const [users, setUsers] = useState<User[]>([])
+  const [contests, setContests] = useState<Contest[]>([])
   const [loading, setLoading] = useState(true)
-  const [user, setUser] = useState<any>(null)
-  const [editContest, setEditContest] = useState<any | null>(null)
+  const [user, setUser] = useState<User | null>(null)
+  const [editContest, setEditContest] = useState<Contest | null>(null)
   const [open, setOpen] = useState(false)
-  const [newContest, setNewContest] = useState({
+  const [newContest, setNewContest] = useState<NewContest>({
     name: '',
     year: '',
     round: '',
     status: '',
   })
-  const [errors, setErrors] = useState<any>({})
+  const [errors, setErrors] = useState<Record<string, string>>({})
   const router = useRouter()
 
   useEffect(() => {
@@ -49,7 +72,7 @@ export default function AdminDashboard() {
       .then((res) => {
         setUser(res.data)
         if (res.data.roleId !== 1) {
-          router.push('/dashboard') // Redirect if not admin
+          router.push('/dashboard')
         }
       })
       .catch(() => {
@@ -58,10 +81,10 @@ export default function AdminDashboard() {
         router.push('/login')
       })
       .finally(() => setLoading(false))
-  }, [])
+  }, [router])
 
   useEffect(() => {
-    if (user && user.roleId === 1) {
+    if (user?.roleId === 1) {
       api
         .get('/users')
         .then((res) => setUsers(res.data))
@@ -74,7 +97,7 @@ export default function AdminDashboard() {
     }
   }, [user])
 
-  const handleEdit = (contest: any) => {
+  const handleEdit = (contest: Contest) => {
     setEditContest(contest)
   }
 
@@ -101,7 +124,7 @@ export default function AdminDashboard() {
   }
 
   const validateForm = () => {
-    let tempErrors: any = {}
+    const tempErrors: Record<string, string> = {}
     if (!newContest.name) tempErrors.name = 'Contest name is required'
     if (!newContest.year || isNaN(Number(newContest.year)))
       tempErrors.year = 'Valid year is required'
@@ -116,14 +139,14 @@ export default function AdminDashboard() {
     if (!validateForm()) return
 
     try {
-      const formattedContest = {
+      const formatted = {
         name: newContest.name,
         year: parseInt(newContest.year),
         round: parseInt(newContest.round),
         status: newContest.status,
       }
 
-      const res = await api.post('/contests', formattedContest)
+      const res = await api.post('/contests', formatted)
       setContests([...contests, res.data.contest])
       setOpen(false)
       setNewContest({ name: '', year: '', round: '', status: '' })
@@ -137,15 +160,16 @@ export default function AdminDashboard() {
   if (!user || user.roleId !== 1) return null
 
   return (
-    <Container maxWidth="lg" sx={{ marginTop: '100px' }}>
+    <Container maxWidth="lg" sx={{ mt: 10 }}>
       <Typography variant="h4" gutterBottom>
         Admin Dashboard
       </Typography>
 
-      <Typography variant="h6" sx={{ marginTop: '20px' }}>
+      {/* Users Table */}
+      <Typography variant="h6" sx={{ mt: 4 }}>
         Users
       </Typography>
-      <TableContainer component={Paper} sx={{ marginBottom: '30px' }}>
+      <TableContainer component={Paper} sx={{ mb: 4 }}>
         <Table>
           <TableHead>
             <TableRow>
@@ -170,57 +194,39 @@ export default function AdminDashboard() {
         </Table>
       </TableContainer>
 
+      {/* Add Contest Button */}
       <Typography variant="h6">Contests</Typography>
       <Button
         variant="contained"
         color="primary"
-        sx={{ marginBottom: '20px' }}
+        sx={{ mb: 2 }}
         onClick={() => setOpen(true)}
       >
         Add Contest
       </Button>
 
+      {/* Add Contest Dialog */}
       <Dialog open={open} onClose={() => setOpen(false)}>
         <DialogTitle>Add New Contest</DialogTitle>
         <DialogContent>
-          <TextField
-            fullWidth
-            label="Name"
-            value={newContest.name}
-            onChange={(e) =>
-              setNewContest({ ...newContest, name: e.target.value })
-            }
-            margin="normal"
-          />
-          <TextField
-            fullWidth
-            label="Year"
-            type="number"
-            value={newContest.year}
-            onChange={(e) =>
-              setNewContest({ ...newContest, year: e.target.value })
-            }
-            margin="normal"
-          />
-          <TextField
-            fullWidth
-            label="Round"
-            type="number"
-            value={newContest.round}
-            onChange={(e) =>
-              setNewContest({ ...newContest, round: e.target.value })
-            }
-            margin="normal"
-          />
-          <TextField
-            fullWidth
-            label="Status"
-            value={newContest.status}
-            onChange={(e) =>
-              setNewContest({ ...newContest, status: e.target.value })
-            }
-            margin="normal"
-          />
+          {['name', 'year', 'round', 'status'].map((field) => (
+            <TextField
+              key={field}
+              fullWidth
+              label={field[0].toUpperCase() + field.slice(1)}
+              value={newContest[field as keyof NewContest]}
+              onChange={(e) =>
+                setNewContest((prev) => ({
+                  ...prev,
+                  [field]: e.target.value,
+                }))
+              }
+              margin="normal"
+              type={field === 'year' || field === 'round' ? 'number' : 'text'}
+              error={!!errors[field]}
+              helperText={errors[field]}
+            />
+          ))}
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setOpen(false)}>Cancel</Button>
@@ -233,6 +239,8 @@ export default function AdminDashboard() {
           </Button>
         </DialogActions>
       </Dialog>
+
+      {/* Contest Table */}
       <TableContainer component={Paper}>
         <Table>
           <TableHead>
@@ -250,7 +258,7 @@ export default function AdminDashboard() {
               <TableRow key={contest.id}>
                 <TableCell>{contest.id}</TableCell>
                 <TableCell>
-                  {editContest && editContest.id === contest.id ? (
+                  {editContest?.id === contest.id ? (
                     <TextField
                       value={editContest.name}
                       onChange={(e) =>
@@ -265,7 +273,7 @@ export default function AdminDashboard() {
                 <TableCell>{contest.round}</TableCell>
                 <TableCell>{contest.status}</TableCell>
                 <TableCell>
-                  {editContest && editContest.id === contest.id ? (
+                  {editContest?.id === contest.id ? (
                     <Button
                       variant="contained"
                       color="primary"
@@ -295,10 +303,12 @@ export default function AdminDashboard() {
           </TableBody>
         </Table>
       </TableContainer>
+
+      {/* Logout */}
       <Button
         variant="contained"
         color="secondary"
-        sx={{ marginTop: '20px' }}
+        sx={{ mt: 4 }}
         onClick={() => {
           localStorage.removeItem('token')
           setAuthToken(null)

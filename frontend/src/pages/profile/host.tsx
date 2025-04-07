@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react'
-import { useRouter } from 'next/router'
 import { useAuth } from '@/context/AuthContext'
 import { api } from '@/utils/api'
 import {
@@ -15,17 +14,28 @@ import {
   TableBody,
 } from '@mui/material'
 
+type Student = {
+  firstName: string
+  lastName: string
+  email: string
+  grade: number
+}
+
+type Site = {
+  name: string
+  city: string
+  state: string
+  capacity: number
+}
+
 export default function HostProfile() {
   const { user } = useAuth()
-  const router = useRouter()
-  const [site, setSite] = useState<any>(null)
-  const [students, setStudents] = useState<any[]>([])
+  const [site, setSite] = useState<Site | null>(null)
+  const [students, setStudents] = useState<Student[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const token = localStorage.getItem('token')
-
-    // 🧠 Set token in axios header before firing request
     if (token) {
       api.defaults.headers.common['Authorization'] = `Bearer ${token}`
     }
@@ -34,10 +44,6 @@ export default function HostProfile() {
 
     const fetchHostData = async () => {
       try {
-        console.log(
-          'Fetching host data with token:',
-          api.defaults.headers.common['Authorization']
-        )
         const res = await api.get(`/users/${user.id}/host`)
         setSite(res.data.site)
         setStudents(res.data.students)
