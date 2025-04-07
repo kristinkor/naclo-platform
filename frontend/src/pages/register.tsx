@@ -89,10 +89,8 @@ export default function Register() {
   useEffect(() => {
     const fetchSites = async () => {
       try {
-        const url = `${process.env.NEXT_PUBLIC_API_URL.replace(
-          /\/+$/,
-          ''
-        )}/api/sites`
+        const baseUrl = process.env.NEXT_PUBLIC_API_URL ?? ''
+        const url = `${baseUrl.replace(/\/+$/, '')}/api/sites`
         console.log('🌐 Fetching sites from:', url)
 
         const res = await axios.get(url, {
