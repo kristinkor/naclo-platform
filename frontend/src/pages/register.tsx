@@ -89,7 +89,9 @@ export default function Register() {
   useEffect(() => {
     const fetchSites = async () => {
       try {
-        const res = await axios.get('http://localhost:5001/api/sites')
+        const res = await axios.get(
+          process.env.NEXT_PUBLIC_API_URL + '/api/sites'
+        )
         setSites(res.data.data)
       } catch (error) {
         console.error('❌ Site fetch failed', error)

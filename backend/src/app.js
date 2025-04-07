@@ -15,14 +15,21 @@ const app = express()
 const prisma = new PrismaClient()
 
 // Middleware
-const allowedOrigins = ['https://naclo-frontend.onrender.com'] // frontend URL
+const allowedOrigins = [
+  'http://localhost:3000',
+  'https://naclo-frontend.onrender.com',
+]
+
 app.use(
   cors({
-    origin: allowedOrigins, // allow requests from frontend domain
-    credentials: true, // allow cookies and auth headers
-    // optional: specify allowed headers and methods if needed
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true)
+      } else {
+        callback(new Error('Not allowed by CORS'))
+      }
+    },
+    credentials: true,
   })
 )
 app.use(express.json())
