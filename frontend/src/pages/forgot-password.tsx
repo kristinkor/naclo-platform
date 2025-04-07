@@ -25,8 +25,12 @@ export default function ForgotPassword() {
         { email }
       )
       setMessage(res.data.message || 'Reset link sent if email exists.')
-    } catch (err: any) {
-      setMessage(err.response?.data?.message || 'Something went wrong.')
+    } catch (err: unknown) {
+      if (axios.isAxiosError(err)) {
+        setMessage(err.response?.data?.message || 'Something went wrong.')
+      } else {
+        setMessage('Something went wrong.')
+      }
     } finally {
       setLoading(false)
     }
