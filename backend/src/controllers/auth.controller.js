@@ -93,7 +93,7 @@ export const registerUser = async (req, res) => {
       expiresIn: '1d',
     })
 
-    const confirmationUrl = `http://localhost:5001/api/auth/confirm?token=${token}`
+    const confirmationUrl = `https://naclo-platform.onrender.com/api/auth/confirm?token=${token}`
 
     // 📬 Send confirmation email
     await transporter.sendMail({

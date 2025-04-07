@@ -17,16 +17,14 @@ const Announcements = () => {
   useEffect(() => {
     const fetchAnnouncements = async () => {
       try {
-        const apiUrl = 'http://localhost:5001' // Access the API URL from environment variable
+        const apiUrl = 'https://your-backend.onrender.com' // Access the API URL from environment variable
         console.log('API URL:', apiUrl) // Ensure this logs the correct URL
         if (!apiUrl) {
           console.error('API URL is not defined')
           return
         }
 
-        const response = await axios.get(
-          `http://localhost:5001/api/announcements`
-        )
+        const response = await axios.get(`${apiUrl}/api/announcements`)
         setAnnouncements(response.data)
       } catch (error) {
         console.error('Error fetching announcements:', error)
