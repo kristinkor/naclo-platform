@@ -1,4 +1,4 @@
-import { Box, Typography, Button, Container } from '@mui/material'
+import { Button } from '@mui/material'
 import Link from 'next/link'
 
 export default function HeroSection() {

@@ -1,14 +1,6 @@
 import { useEffect, useState } from 'react'
 import axios from 'axios'
-import {
-  Box,
-  Typography,
-  Card,
-  CardContent,
-  Button,
-  TextField,
-  Link,
-} from '@mui/material'
+import { Box, Typography, Button, TextField, Link } from '@mui/material'
 
 interface Announcement {
   date: string

@@ -1,4 +1,4 @@
-import { Box, Typography, Button } from '@mui/material'
+import { Typography, Button } from '@mui/material'
 
 export default function DonateContact() {
   return (

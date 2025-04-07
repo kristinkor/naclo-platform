@@ -1,5 +1,5 @@
 import React from 'react'
-import { Typography, Container } from '@mui/material'
+import { Typography } from '@mui/material'
 
 const AboutNACLOPage: React.FC = () => {
   return (

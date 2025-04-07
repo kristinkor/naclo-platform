@@ -2,11 +2,9 @@ import React from 'react'
 import {
   Typography,
   Container,
-  Box,
   List,
   ListItem,
   ListItemText,
-  Divider,
   Card,
   CardContent,
   Button,

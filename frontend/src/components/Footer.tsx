@@ -1,4 +1,4 @@
-import { Box, Button, Typography } from '@mui/material'
+import { Box, Button } from '@mui/material'
 import Link from 'next/link'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import Image from 'next/image'
@@ -7,7 +7,6 @@ import {
   faLinkedin,
   faInstagram,
   faFacebook,
-  faYoutube,
 } from '@fortawesome/free-brands-svg-icons'
 
 const socialLinks = [
@@ -86,9 +85,9 @@ export default function Footer() {
               <div className="social">
                 {socialLinks.map(({ href, icon }) => (
                   <div className="social-item" key={href}>
-                    <a target="_blank" rel="noopener noreferrer" href={href}>
+                    <Link target="_blank" rel="noopener noreferrer" href={href}>
                       <FontAwesomeIcon icon={icon} size="2x" />
-                    </a>
+                    </Link>
                   </div>
                 ))}
               </div>
