@@ -158,12 +158,24 @@ export default function Register() {
         roleId: 3,
       }
 
-      await api.post('/api/auth/register', payload, { withCredentials: true })
+      await axios.post(
+        'https://naclo-platform.onrender.com/api/auth/register',
+        payload,
+        {
+          withCredentials: true,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      )
 
       router.push('/login')
     } catch (err) {
-      if (err instanceof AxiosError) {
-        setError(err.response?.data?.message || 'Registration failed')
+      console.error('❌ Registration error:', err)
+
+      if (axios.isAxiosError(err)) {
+        const msg = err.response?.data?.message || err.message
+        setError(msg)
       } else {
         setError('Unexpected error occurred')
       }
