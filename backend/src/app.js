@@ -24,8 +24,10 @@ const allowedOrigin = 'https://naclo-frontend.onrender.com'
 
 app.use(
   cors({
-    origin: allowedOrigin,
+    origin: 'https://naclo-frontend.onrender.com', // No logic, hardcoded
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
   })
 )
 
