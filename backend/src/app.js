@@ -22,14 +22,20 @@ const allowedOrigins = [
 
 const allowedOrigin = 'https://naclo-frontend.onrender.com'
 
-app.use(
-  cors({
-    origin: 'https://naclo-frontend.onrender.com', // No logic, hardcoded
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-  })
-)
+app.use((req, res, next) => {
+  console.log('🔍 Incoming request from:', req.headers.origin)
+  res.setHeader(
+    'Access-Control-Allow-Origin',
+    'https://naclo-frontend.onrender.com'
+  )
+  res.setHeader('Access-Control-Allow-Credentials', 'true')
+  res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS,PUT,DELETE')
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(200)
+  }
+  next()
+})
 
 // --- Middleware ---
 app.use(express.json())
@@ -55,7 +61,10 @@ import contestRoutes from './routes/contest.routes.js'
 import problemRoutes from './routes/problem.routes.js'
 import announcementRoutes from './routes/announcement.routes.js'
 import siteRoutes from './routes/site.routes.js'
-
+app.use((req, res, next) => {
+  console.log('📥 Method:', req.method, 'URL:', req.originalUrl)
+  next()
+})
 // --- Use Routes (note the /api prefix) ---
 app.use('/api/auth', authRoutes)
 app.use('/api/users', userRoutes)
