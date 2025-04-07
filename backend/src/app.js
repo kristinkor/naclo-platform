@@ -1,7 +1,6 @@
 // backend/src/app.js
 
 import express from 'express'
-import cors from 'cors'
 import dotenv from 'dotenv'
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcryptjs'
@@ -14,16 +13,8 @@ dotenv.config()
 const app = express()
 const prisma = new PrismaClient()
 
-// --- ✅ CORS Configuration ---
-const allowedOrigins = [
-  'http://localhost:3000',
-  'https://naclo-frontend.onrender.com', // your frontend's deployed domain
-]
-
-const allowedOrigin = 'https://naclo-frontend.onrender.com'
-
+// --- ✅ CORS Configuration (manually set headers to fix Render CORS issue) ---
 app.use((req, res, next) => {
-  console.log('🔍 Incoming request from:', req.headers.origin)
   res.setHeader(
     'Access-Control-Allow-Origin',
     'https://naclo-frontend.onrender.com'
@@ -35,26 +26,6 @@ app.use((req, res, next) => {
     return res.sendStatus(200)
   }
   next()
-})
-
-app.options('/api/test-cors', (req, res) => {
-  res.setHeader(
-    'Access-Control-Allow-Origin',
-    'https://naclo-frontend.onrender.com'
-  )
-  res.setHeader('Access-Control-Allow-Credentials', 'true')
-  res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS')
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
-  res.send('CORS preflight OK')
-})
-
-app.get('/api/test-cors', (req, res) => {
-  res.setHeader(
-    'Access-Control-Allow-Origin',
-    'https://naclo-frontend.onrender.com'
-  )
-  res.setHeader('Access-Control-Allow-Credentials', 'true')
-  res.send({ message: 'CORS GET OK' })
 })
 
 // --- Middleware ---
@@ -98,7 +69,7 @@ const startServer = async () => {
 
     const PORT = process.env.PORT || 5001
     app.listen(PORT, () => {
-      console.log(`🚀 Server running on port ${PORT}`)
+      console.log(`🚀 Server running on port ${PORT} with CORS fix ✅`)
     })
   } catch (error) {
     console.error('❌ Failed to connect to database:', error.message)
