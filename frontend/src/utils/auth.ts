@@ -28,8 +28,6 @@ export const handleSubmit = async (
     country?: string
     birthdate?: string
     grade?: number
-    parentEmail?: string
-    parentApproved?: boolean
     roleId?: number
   },
   setError: (error: string) => void,

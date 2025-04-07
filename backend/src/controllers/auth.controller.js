@@ -3,19 +3,9 @@ import jwt from 'jsonwebtoken'
 import { PrismaClient } from '@prisma/client'
 import dotenv from 'dotenv'
 import crypto from 'crypto'
-import nodemailer from 'nodemailer'
-
+import { Resend } from 'resend'
 dotenv.config()
 const prisma = new PrismaClient()
-
-const transporter = nodemailer.createTransport({
-  host: process.env.EMAIL_HOST,
-  port: parseInt(process.env.EMAIL_PORT),
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-})
 
 // 🔹 Register New User
 export const registerUser = async (req, res) => {
@@ -87,6 +77,7 @@ export const registerUser = async (req, res) => {
         },
       })
     }
+    const resend = new Resend(process.env.RESEND_API_KEY)
 
     // 🧪 Generate email confirmation token
     const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, {
@@ -96,17 +87,18 @@ export const registerUser = async (req, res) => {
     const confirmationUrl = `https://naclo-platform.onrender.com/api/auth/confirm?token=${token}`
 
     // 📬 Send confirmation email
-    await transporter.sendMail({
-      from: `"NACLO" <${process.env.EMAIL_USER}>`,
+    await resend.emails.send({
+      from: process.env.EMAIL_FROM,
       to: email,
       subject: 'Confirm your NACLO account',
       html: `
-        <p>Hello ${firstName},</p>
-        <p>Thank you for registering. Please confirm your email address:</p>
-        <a href="${confirmationUrl}">Click here to confirm</a>
-        <p>This link will expire in 24 hours.</p>
-      `,
+    <p>Hello ${firstName},</p>
+    <p>Thank you for registering. Please confirm your email address:</p>
+    <a href="${confirmationUrl}">Click here to confirm</a>
+    <p>This link will expire in 24 hours.</p>
+  `,
     })
+    console.log('📧 Email sent')
 
     return res.status(201).json({
       message: 'Registration successful. Please confirm your email to log in.',
