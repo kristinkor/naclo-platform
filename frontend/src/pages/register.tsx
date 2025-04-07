@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
-import { api } from '../utils/api'
-import axios, { AxiosError } from 'axios'
+import axios from 'axios'
+
 import { SelectChangeEvent } from '@mui/material/Select'
 
 import {
