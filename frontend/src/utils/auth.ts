@@ -1,6 +1,7 @@
 import axios from 'axios'
 import { api } from './api'
 import { NextRouter } from 'next/router'
+import { UserType } from '../types/user'
 
 // Sets the auth token in Axios headers for future requests
 export const setAuthToken = (token: string | null) => {
@@ -34,7 +35,7 @@ export const handleSubmit = async (
   setError: (error: string) => void,
   isRegister: boolean,
   router: NextRouter
-): Promise<null | Record<string, any> | void> => {
+): Promise<UserType | null | void> => {
   e.preventDefault()
   setError('')
 
@@ -51,7 +52,7 @@ export const handleSubmit = async (
       password: form.password,
     })
 
-    const { token, user } = res.data
+    const { token, user }: { token: string; user: UserType } = res.data
     localStorage.setItem('token', token)
     setAuthToken(token)
 

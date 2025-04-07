@@ -119,12 +119,6 @@ export default function Footer() {
           </p>
           <div>
             <p>All rights reserved.</p>
-            {/* <p>
-              Built with ❤ by{' '}
-              <a href="/" target="_blank" rel="noopener noreferrer">
-                KK
-              </a>
-            </p> */}
           </div>
         </div>
       </div>
