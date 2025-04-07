@@ -17,7 +17,7 @@ const Announcements = () => {
   useEffect(() => {
     const fetchAnnouncements = async () => {
       try {
-        const apiUrl = 'https://your-backend.onrender.com' // Access the API URL from environment variable
+        const apiUrl = 'https://naclo-platform.onrender.com' // Access the API URL from environment variable
         console.log('API URL:', apiUrl) // Ensure this logs the correct URL
         if (!apiUrl) {
           console.error('API URL is not defined')

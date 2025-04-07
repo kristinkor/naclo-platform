@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 export const api = axios.create({
-  baseURL: 'https://your-backend.onrender.com',
+  baseURL: 'https://naclo-platform.onrender.com',
   withCredentials: true,
 })
 
