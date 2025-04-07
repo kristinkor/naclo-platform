@@ -12,10 +12,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
         style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}
       >
         <Navbar />
-        <main
-          className="main"
-          style={{ paddingTop: '64px', paddingBottom: '64px' }}
-        >
+        <main className="main" style={{ paddingTop: '64px' }}>
           <Component {...pageProps} />
         </main>
         <Footer />
