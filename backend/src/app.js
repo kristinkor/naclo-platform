@@ -20,17 +20,12 @@ const allowedOrigins = [
   'https://naclo-frontend.onrender.com', // your frontend's deployed domain
 ]
 
+const allowedOrigin = 'https://naclo-frontend.onrender.com'
+
 app.use(
   cors({
-    origin: (origin, callback) => {
-      // Allow requests with no origin (like mobile apps, curl, etc.)
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true)
-      } else {
-        callback(new Error('Not allowed by CORS'))
-      }
-    },
-    credentials: true, // ✅ Allow cookies and credentials
+    origin: allowedOrigin,
+    credentials: true,
   })
 )
 
