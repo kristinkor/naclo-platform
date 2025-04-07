@@ -37,6 +37,26 @@ app.use((req, res, next) => {
   next()
 })
 
+app.options('/api/test-cors', (req, res) => {
+  res.setHeader(
+    'Access-Control-Allow-Origin',
+    'https://naclo-frontend.onrender.com'
+  )
+  res.setHeader('Access-Control-Allow-Credentials', 'true')
+  res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS')
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
+  res.send('CORS preflight OK')
+})
+
+app.get('/api/test-cors', (req, res) => {
+  res.setHeader(
+    'Access-Control-Allow-Origin',
+    'https://naclo-frontend.onrender.com'
+  )
+  res.setHeader('Access-Control-Allow-Credentials', 'true')
+  res.send({ message: 'CORS GET OK' })
+})
+
 // --- Middleware ---
 app.use(express.json())
 
@@ -61,10 +81,7 @@ import contestRoutes from './routes/contest.routes.js'
 import problemRoutes from './routes/problem.routes.js'
 import announcementRoutes from './routes/announcement.routes.js'
 import siteRoutes from './routes/site.routes.js'
-app.use((req, res, next) => {
-  console.log('📥 Method:', req.method, 'URL:', req.originalUrl)
-  next()
-})
+
 // --- Use Routes (note the /api prefix) ---
 app.use('/api/auth', authRoutes)
 app.use('/api/users', userRoutes)
