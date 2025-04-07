@@ -158,7 +158,8 @@ export default function Register() {
         roleId: 3,
       }
 
-      await api.post('/auth/register', payload)
+      await api.post('/api/auth/register', payload, { withCredentials: true })
+
       router.push('/login')
     } catch (err) {
       if (err instanceof AxiosError) {
