@@ -1,0 +1,64 @@
+[
+  { "name": "Adam Hesterberg", "affiliation": "Harvard University" },
+  {
+    "name": "Aleka Blackwell",
+    "affiliation": "Middle Tennessee State University"
+  },
+  { "name": "Ali Sharman", "affiliation": "University of Michigan" },
+  { "name": "Andrew Tockman", "affiliation": "MIT" },
+  { "name": "Annie Zhu", "affiliation": "Harvard University" },
+  {
+    "name": "Arul Kolla",
+    "affiliation": "Massachusetts Institute of Technology"
+  },
+  { "name": "Ben LaFond", "affiliation": "Harvard University" },
+  { "name": "Brian Xiao", "affiliation": "MIT" },
+  { "name": "Cerulean Ozarow", "affiliation": "Brown University" },
+  { "name": "Daniel Lovsted", "affiliation": "McGill University" },
+  { "name": "David Mortensen", "affiliation": "Carnegie Mellon University" },
+  { "name": "Duligur Ibeling", "affiliation": "Stanford University" },
+  {
+    "name": "Elena Filatova",
+    "affiliation": "Graduate Center, City University of New York"
+  },
+  { "name": "Ethan Chi", "affiliation": "Hudson River Trading" },
+  { "name": "Fiona Lu", "affiliation": "MIT" },
+  { "name": "Heidi Lei", "affiliation": "MIT" },
+  { "name": "Henry Gustafson", "affiliation": "" },
+  { "name": "Irene Li", "affiliation": "Yale University" },
+  { "name": "James Pustejovsky", "affiliation": "Brandeis University" },
+  { "name": "Ji Hun Wang", "affiliation": "Stanford University" },
+  { "name": "Ken Jiang", "affiliation": "University of Waterloo" },
+  { "name": "Kevin Liang", "affiliation": "University of Pennsylvania" },
+  { "name": "Lori Levin", "affiliation": "Carnegie Mellon University" },
+  { "name": "Margarita Misirpashayeva", "affiliation": "MIT" },
+  { "name": "Matthew Gardner", "affiliation": "Carnegie Mellon University" },
+  { "name": "Mihir Singhal", "affiliation": "UC Berkeley" },
+  { "name": "Nathan Kim", "affiliation": "Stanford" },
+  {
+    "name": "Patrick Littell",
+    "affiliation": "University of British Columbia"
+  },
+  {
+    "name": "Pranav Krishna",
+    "affiliation": "Massachusetts Institute of Technology"
+  },
+  { "name": "Riley Kong", "affiliation": "MIT" },
+  { "name": "Rishab Parthasarathy", "affiliation": "MIT" },
+  { "name": "Ryan Chi", "affiliation": "Stanford University" },
+  { "name": "Shuli Jones", "affiliation": "Google" },
+  { "name": "Shuli Jones", "affiliation": "Carnegie Mellon University" },
+  {
+    "name": "ShuliTest JonesTest",
+    "affiliation": "Carnegie Mellon University"
+  },
+  { "name": "Skyelar Raiti", "affiliation": "University of Michigan" },
+  {
+    "name": "Sonia Reilly",
+    "affiliation": "Massachusetts Institute of Technology"
+  },
+  { "name": "Stella Lau", "affiliation": "University of Cambridge" },
+  { "name": "Tom McCoy", "affiliation": "Yale University" },
+  { "name": "Tom Roberts", "affiliation": "Utrecht University" },
+  { "name": "Yilu Zhou", "affiliation": "Fordham University" }
+]

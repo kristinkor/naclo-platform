@@ -1,0 +1,76 @@
+[
+  { "name": "Adam Hesterberg", "affiliation": "Harvard University" },
+  {
+    "name": "Aleka Blackwell",
+    "affiliation": "Middle Tennessee State University"
+  },
+  { "name": "Ali Sharman", "affiliation": "University of Michigan" },
+  { "name": "Andrés Pablo Salanova", "affiliation": "University of Ottawa" },
+  {
+    "name": "Arul Kolla",
+    "affiliation": "Massachusetts Institute of Technology"
+  },
+  { "name": "Babette Verhoeven", "affiliation": "Aquinas College" },
+  { "name": "Ben LaFond", "affiliation": "Harvard University" },
+  {
+    "name": "Benjamin McAvoy-Bickford",
+    "affiliation": "University of Pennsylvania"
+  },
+  { "name": "Cerulean Ozarow", "affiliation": "Brown University" },
+  {
+    "name": "Daniel Harbour",
+    "affiliation": "Queen Mary University of London"
+  },
+  { "name": "Daniel Lovsted", "affiliation": "McGill University" },
+  { "name": "David Mortensen", "affiliation": "Carnegie Mellon University" },
+  { "name": "Dick Hudson", "affiliation": "University College London" },
+  {
+    "name": "Elisabeth Mayer",
+    "affiliation": "Australian National University"
+  },
+  {
+    "name": "Ellie Bultena",
+    "affiliation": "Massachusetts Institute of Technology"
+  },
+  { "name": "Ethan Chi", "affiliation": "Hudson River Trading" },
+  { "name": "Gordon Chi", "affiliation": "Stanford University" },
+  { "name": "Harold Somers", "affiliation": "AILO" },
+  { "name": "Heather Newell", "affiliation": "UQAM" },
+  { "name": "James Pustejovsky", "affiliation": "Brandeis University" },
+  { "name": "Jane Li", "affiliation": "Johns Hopkins University" },
+  { "name": "Ji Hun Wang", "affiliation": "Stanford University" },
+  { "name": "Kazune Sato", "affiliation": "University of Cambridge" },
+  { "name": "Ken Jiang", "affiliation": "University of Waterloo" },
+  { "name": "Kevin Liang", "affiliation": "University of Pennsylvania" },
+  { "name": "Lori Levin", "affiliation": "Carnegie Mellon University" },
+  { "name": "Lynn Clark", "affiliation": "University of Canterbury" },
+  { "name": "Margarita Misirpashayeva", "affiliation": "MIT" },
+  {
+    "name": "Mary Laughren",
+    "affiliation": "Massachusetts Institute of Technology"
+  },
+  { "name": "Oliver Sayeed", "affiliation": "University of Pennsylvania" },
+  {
+    "name": "Patrick Littell",
+    "affiliation": "University of British Columbia"
+  },
+  {
+    "name": "Pranav Krishna",
+    "affiliation": "Massachusetts Institute of Technology"
+  },
+  { "name": "Riley Kong", "affiliation": "MIT" },
+  { "name": "Rishab Parthasarathy", "affiliation": "MIT" },
+  { "name": "Ryan Chi", "affiliation": "Stanford University" },
+  {
+    "name": "ShuliTest JonesTest",
+    "affiliation": "Carnegie Mellon University"
+  },
+  { "name": "Simi Hellsten", "affiliation": "University of Oxford" },
+  {
+    "name": "Sonia Reilly",
+    "affiliation": "Massachusetts Institute of Technology"
+  },
+  { "name": "Tom McCoy", "affiliation": "Yale University" },
+  { "name": "Tom Roberts", "affiliation": "Utrecht University" },
+  { "name": "Vlado Keselj", "affiliation": "Dalhousie University" }
+]

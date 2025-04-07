@@ -1,0 +1,104 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// 🧠 Authenticated user
+model User {
+  id             Int     @id @default(autoincrement())
+  firstName      String
+  lastName       String
+  email          String  @unique
+  password       String
+  emailConfirmed Boolean @default(false)
+  roleId         Int
+  role           Role    @relation("UserRoleRelation", fields: [roleId], references: [id])
+
+  student Student? @relation("StudentProfile")
+
+  resetToken   String?
+  resetExpires DateTime?
+  hostedSites  Site[]    @relation("SiteHosts") // ✅ Optional: user can host 0 or many sites
+}
+
+// 👤 Student profile (additional data)
+model Student {
+  id     Int  @id @default(autoincrement())
+  userId Int  @unique
+  user   User @relation("StudentProfile", fields: [userId], references: [id]) // 
+
+  birthdate    DateTime
+  countryOfIOL String
+  state        String
+  grade        Int
+  school       String?
+  siteId       Int?
+  site         Site?    @relation(fields: [siteId], references: [id])
+  languages    String?
+}
+
+// 🎭 User roles
+model Role {
+  id    Int      @id @default(autoincrement())
+  name  UserRole @unique
+  users User[]   @relation("UserRoleRelation")
+}
+
+// 📍 Contest sites
+model Site {
+  id          Int             @id @default(autoincrement())
+   name        String          @unique
+  country     String
+  city        String
+  state       String
+  zip         String
+  address     String
+  capacity    Int
+  type        InstitutionType
+  eligibility EligibilityType
+  openness    OpennessType
+  timezone    Timezone
+  website     String?
+
+  students Student[]
+  hosts    User[]    @relation("SiteHosts") // ✅ Optional: site can have 0 or many hosts
+}
+
+// 🔘 ENUMS
+
+enum UserRole {
+  STUDENT
+  HOST
+  ORGANIZER
+  WEBMASTER
+}
+
+enum InstitutionType {
+  UNIVERSITY
+  HIGH_SCHOOL
+  OTHER
+}
+
+enum EligibilityType {
+  ALL_STUDENTS
+  ENROLLED_ONLY
+}
+
+enum OpennessType {
+  CLOSED
+  OPEN
+  OPEN_BY_APPROVAL
+}
+
+enum Timezone {
+  EST
+  CST
+  MST
+  PST
+  AST
+  HAST
+}
