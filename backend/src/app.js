@@ -15,9 +15,16 @@ const app = express()
 const prisma = new PrismaClient()
 
 // Middleware
-axios.post('https://naclo-platform.onrender.com/api/register', formData, {
-  withCredentials: true,
-})
+const allowedOrigins = ['https://naclo-frontend.onrender.com'] // frontend URL
+app.use(
+  cors({
+    origin: allowedOrigins, // allow requests from frontend domain
+    credentials: true, // allow cookies and auth headers
+    // optional: specify allowed headers and methods if needed
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  })
+)
 app.use(express.json())
 
 // Simple health check route
