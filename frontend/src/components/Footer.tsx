@@ -69,9 +69,6 @@ export default function Footer() {
                 <Link href="/about">History of NACLO</Link>
               </li>
               <li className="menu-item menu-item-type-post_type menu-item-object-page ">
-                <a href="/">Shop</a>
-              </li>
-              <li className="menu-item menu-item-type-post_type menu-item-object-page ">
                 <Link href="/donate">Donate</Link>
               </li>
               <li className="menu-item menu-item-type-post_type menu-item-object-page ">
