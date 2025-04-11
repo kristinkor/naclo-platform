@@ -86,7 +86,7 @@ export const registerUser = async (req, res) => {
       expiresIn: '1d',
     })
 
-    const baseUrl = process.env.FRONTEND_URL || 'http://localhost:3000'
+    const baseUrl = process.env.BACKEND_URL || 'http://localhost:5001'
     const confirmationUrl = `${baseUrl.replace(/\/+$/, '')}/api/auth/confirm?token=${token}`
 
     // 📬 Send confirmation email
