@@ -51,7 +51,7 @@ export default function StudentProfile() {
   if (!user) return null
 
   return (
-    <Container maxWidth="sm" sx={{ mt: 8 }}>
+    <Container maxWidth="sm" sx={{ mt: 8, mb: 8 }}>
       <Typography variant="h4" gutterBottom>
         Welcome, {user.firstName}!
       </Typography>

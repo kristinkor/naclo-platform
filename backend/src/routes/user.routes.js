@@ -75,7 +75,6 @@ router.get('/me', authenticateToken, async (req, res) => {
             countryOfIOL: true,
             state: true,
             city: true,
-            phone: true,
             school: true,
             grade: true,
             birthdate: true,
@@ -113,7 +112,6 @@ router.get('/', authenticateToken, async (req, res) => {
         role: { select: { name: true } },
         student: {
           select: {
-            phone: true,
             city: true,
             state: true,
             zip: true,

@@ -80,7 +80,8 @@ export default function Register() {
 
   const [sites, setSites] = useState<Site[]>([])
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
+  const [errors, setErrors] = useState<{ [key: string]: string }>({})
+  const [success, setSuccess] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
@@ -91,27 +92,14 @@ export default function Register() {
       try {
         const baseUrl = process.env.NEXT_PUBLIC_API_URL ?? ''
         const url = `${baseUrl.replace(/\/+$/, '')}/api/sites`
-        console.log('🌐 Fetching sites from:', url)
-
-        const res = await axios.get(url, {
-          withCredentials: true,
-        })
-
+        const res = await axios.get(url, { withCredentials: true })
         const sitesData = res.data?.data
-
-        if (Array.isArray(sitesData) && sitesData.length > 0) {
-          console.log('✅ Sites fetched:', sitesData)
-          setSites(sitesData)
-        } else {
-          console.warn('⚠️ Sites response empty or unexpected:', res.data)
-          setSites([])
-        }
+        setSites(Array.isArray(sitesData) ? sitesData : [])
       } catch (error) {
         console.error('❌ Site fetch failed:', error)
         setSites([])
       }
     }
-
     fetchSites()
   }, [])
 
@@ -136,28 +124,40 @@ export default function Register() {
   }
 
   const validateForm = () => {
-    if (!form.firstName || !form.lastName || !form.email) {
-      setError('Please fill in all required fields.')
-      return false
-    }
+    const newErrors: { [key: string]: string } = {}
 
-    if (!/^\S+@\S+\.\S+$/.test(form.email)) {
-      setError('Invalid email format.')
-      return false
-    }
+    if (!form.firstName) newErrors.firstName = 'First name is required.'
+    if (!form.lastName) newErrors.lastName = 'Last name is required.'
+    if (!form.email) newErrors.email = 'Email is required.'
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email))
+      newErrors.email = 'Invalid email format.'
 
-    if (form.password !== form.confirmPassword) {
-      setError('Passwords do not match.')
-      return false
-    }
+    if (!form.password) newErrors.password = 'Password is required.'
+    else if (form.password.length < 8)
+      newErrors.password = 'Password must be at least 8 characters.'
 
-    return true
+    if (!form.confirmPassword)
+      newErrors.confirmPassword = 'Please confirm your password.'
+    else if (form.password !== form.confirmPassword)
+      newErrors.confirmPassword = 'Passwords do not match.'
+
+    if (!form.siteId) newErrors.siteId = 'Please select a site.'
+    if (!form.country) newErrors.country = 'Please select a country.'
+    if (!form.city) newErrors.city = 'City is required.'
+    if (!form.state) newErrors.state = 'State is required.'
+    if (!form.zip) newErrors.zip = 'ZIP is required.'
+    if (!form.birthdate) newErrors.birthdate = 'Birthdate is required.'
+    if (!form.grade) newErrors.grade = 'Grade is required.'
+
+    setErrors(newErrors)
+    return Object.keys(newErrors).length === 0
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
-    setError('')
+    setErrors({})
+    setSuccess('')
 
     if (!validateForm()) {
       setLoading(false)
@@ -172,27 +172,28 @@ export default function Register() {
         roleId: 3,
       }
 
-      await axios.post(
-        'https://naclo-platform.onrender.com/api/auth/register',
-        payload,
-        {
-          withCredentials: true,
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        }
+      const baseUrl = (process.env.NEXT_PUBLIC_API_URL || '').replace(
+        /\/+$/,
+        ''
+      )
+      const endpoint = '/api/auth/register'
+      const url = `${baseUrl}${endpoint}`
+      const res = await axios.post(url, payload, {
+        withCredentials: true,
+        headers: { 'Content-Type': 'application/json' },
+      })
+      console.log('🌐 API URL:', baseUrl)
+      console.log('🧭 Final URL:', url)
+      console.log('📦 Payload:', payload)
+      setSuccess(
+        res.data.message ||
+          '✅ Registration successful! Please check your email.'
       )
 
-      router.push('/login')
+      setTimeout(() => router.push('/login'), 3000)
     } catch (err) {
       console.error('❌ Registration error:', err)
-
-      if (axios.isAxiosError(err)) {
-        const msg = err.response?.data?.message || err.message
-        setError(msg)
-      } else {
-        setError('Unexpected error occurred')
-      }
+      setErrors({ global: 'Registration failed. Please try again later.' })
     } finally {
       setLoading(false)
     }
@@ -203,9 +204,15 @@ export default function Register() {
       <Typography variant="h4" gutterBottom>
         Register for NACLO
       </Typography>
-      {error && <Typography color="error">{error}</Typography>}
 
-      <form onSubmit={handleSubmit}>
+      {errors.global && <Typography color="error">{errors.global}</Typography>}
+      {success && (
+        <Typography color="primary" sx={{ mt: 2 }}>
+          {success}
+        </Typography>
+      )}
+
+      <form onSubmit={handleSubmit} noValidate>
         <TextField
           name="firstName"
           label="First Name"
@@ -213,6 +220,8 @@ export default function Register() {
           onChange={handleTextChange}
           fullWidth
           margin="normal"
+          error={!!errors.firstName}
+          helperText={errors.firstName}
         />
         <TextField
           name="lastName"
@@ -221,6 +230,8 @@ export default function Register() {
           onChange={handleTextChange}
           fullWidth
           margin="normal"
+          error={!!errors.lastName}
+          helperText={errors.lastName}
         />
         <TextField
           name="email"
@@ -229,6 +240,8 @@ export default function Register() {
           onChange={handleTextChange}
           fullWidth
           margin="normal"
+          error={!!errors.email}
+          helperText={errors.email}
         />
         <TextField
           name="phone"
@@ -239,7 +252,7 @@ export default function Register() {
           margin="normal"
         />
 
-        <FormControl fullWidth margin="normal">
+        <FormControl fullWidth margin="normal" error={!!errors.siteId}>
           <InputLabel>Site</InputLabel>
           <Select
             name="siteId"
@@ -257,9 +270,14 @@ export default function Register() {
               <MenuItem disabled>Sites loading or unavailable</MenuItem>
             )}
           </Select>
+          {errors.siteId && (
+            <Typography color="error" variant="caption">
+              {errors.siteId}
+            </Typography>
+          )}
         </FormControl>
 
-        <FormControl fullWidth margin="normal">
+        <FormControl fullWidth margin="normal" error={!!errors.country}>
           <InputLabel>Country</InputLabel>
           <Select
             name="country"
@@ -270,6 +288,11 @@ export default function Register() {
             <MenuItem value="USA">USA</MenuItem>
             <MenuItem value="Canada">Canada</MenuItem>
           </Select>
+          {errors.country && (
+            <Typography color="error" variant="caption">
+              {errors.country}
+            </Typography>
+          )}
         </FormControl>
 
         <TextField
@@ -279,6 +302,8 @@ export default function Register() {
           onChange={handleTextChange}
           fullWidth
           margin="normal"
+          error={!!errors.city}
+          helperText={errors.city}
         />
         <TextField
           name="state"
@@ -287,6 +312,8 @@ export default function Register() {
           onChange={handleTextChange}
           fullWidth
           margin="normal"
+          error={!!errors.state}
+          helperText={errors.state}
         />
         <TextField
           name="zip"
@@ -295,6 +322,8 @@ export default function Register() {
           onChange={handleTextChange}
           fullWidth
           margin="normal"
+          error={!!errors.zip}
+          helperText={errors.zip}
         />
 
         <TextField
@@ -306,8 +335,9 @@ export default function Register() {
           fullWidth
           margin="normal"
           InputLabelProps={{ shrink: true }}
+          error={!!errors.birthdate}
+          helperText={errors.birthdate}
         />
-
         <TextField
           name="grade"
           label="Grade"
@@ -316,6 +346,8 @@ export default function Register() {
           onChange={handleTextChange}
           fullWidth
           margin="normal"
+          error={!!errors.grade}
+          helperText={errors.grade}
         />
 
         <FormControl fullWidth margin="normal">
@@ -344,6 +376,8 @@ export default function Register() {
           onChange={handleTextChange}
           fullWidth
           margin="normal"
+          error={!!errors.password}
+          helperText={errors.password}
           InputProps={{
             endAdornment: (
               <InputAdornment position="end">
@@ -366,6 +400,8 @@ export default function Register() {
           onChange={handleTextChange}
           fullWidth
           margin="normal"
+          error={!!errors.confirmPassword}
+          helperText={errors.confirmPassword}
           InputProps={{
             endAdornment: (
               <InputAdornment position="end">

@@ -7,7 +7,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// 🧠 Authenticated user
+// Authenticated user
 model User {
   id             Int     @id @default(autoincrement())
   firstName      String
@@ -25,7 +25,7 @@ model User {
   hostedSites  Site[]    @relation("SiteHosts") // ✅ Optional: user can host 0 or many sites
 }
 
-// 👤 Student profile (additional data)
+// Student profile (additional data)
 model Student {
   id     Int  @id @default(autoincrement())
   userId Int  @unique
@@ -34,6 +34,7 @@ model Student {
   birthdate    DateTime
   countryOfIOL String
   state        String
+  city         String 
   grade        Int
   school       String?
   siteId       Int?

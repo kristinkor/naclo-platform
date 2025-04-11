@@ -22,6 +22,7 @@ export const registerUser = async (req, res) => {
       birthdate,
       grade,
       countryOfIOL,
+      city,
       state,
       school,
       languages,
@@ -69,6 +70,7 @@ export const registerUser = async (req, res) => {
           userId: user.id,
           state,
           countryOfIOL,
+          city,
           birthdate: new Date(birthdate),
           grade: Number(grade),
           school,
@@ -84,7 +86,8 @@ export const registerUser = async (req, res) => {
       expiresIn: '1d',
     })
 
-    const confirmationUrl = `https://naclo-platform.onrender.com/api/auth/confirm?token=${token}`
+    const baseUrl = process.env.FRONTEND_URL || 'http://localhost:3000'
+    const confirmationUrl = `${baseUrl.replace(/\/+$/, '')}/api/auth/confirm?token=${token}`
 
     // 📬 Send confirmation email
     await resend.emails.send({
@@ -200,25 +203,42 @@ export const loginUser = async (req, res) => {
 export const requestPasswordReset = async (req, res) => {
   try {
     const { email } = req.body
-
-    // Find user by email
     const user = await prisma.user.findUnique({ where: { email } })
+
     if (!user) return res.status(404).json({ message: 'User not found' })
 
-    // Generate secure token & expiration (1 hour)
     const resetToken = crypto.randomBytes(32).toString('hex')
-    const resetExpires = new Date(Date.now() + 3600000) // 1 hour from now
+    const resetExpires = new Date(Date.now() + 3600000)
 
-    // Save token in database
     await prisma.user.update({
       where: { email },
       data: { resetToken, resetExpires },
     })
 
-    // (TODO: Send Email) - For now, return token as a response
-    res.json({ message: 'Reset link sent', resetToken })
+    const resetUrl = `https://naclo-frontend.onrender.com/reset-password?token=${resetToken}`
+
+    const resend = new Resend(process.env.RESEND_API_KEY)
+
+    await resend.emails.send({
+      from: process.env.EMAIL_FROM,
+      to: email,
+      subject: 'Reset your NACLO password',
+      html: `
+        <p>Hello,</p>
+        <p>We received a request to reset your password.</p>
+        <p><a href="${resetUrl}">Click here to reset your password</a></p>
+        <p>This link will expire in 1 hour.</p>
+      `,
+    })
+
+    console.log('📧 Password reset email sent to:', email)
+
+    return res.json({
+      message: 'Reset link sent! Please check your email.',
+    })
   } catch (error) {
-    res.status(500).json({ message: error.message })
+    console.error('❌ Password reset error:', error)
+    return res.status(500).json({ message: 'Error sending reset link.' })
   }
 }
 

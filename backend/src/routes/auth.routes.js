@@ -10,7 +10,7 @@ const router = express.Router()
 
 router.post('/register', registerUser)
 router.post('/login', loginUser)
-router.post('/reset-request', requestPasswordReset) // Request password reset
+router.post('/forgot-password', requestPasswordReset) // Request password reset
 router.post('/reset-confirm', confirmPasswordReset) // Confirm new password
 router.get('/confirm', confirmEmail)
 

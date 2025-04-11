@@ -5,6 +5,7 @@ import dotenv from 'dotenv'
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcryptjs'
 import { PrismaClient } from '@prisma/client'
+import cors from 'cors'
 
 // Load environment variables
 dotenv.config()
@@ -14,14 +15,21 @@ const app = express()
 const prisma = new PrismaClient()
 
 // --- ✅ CORS Configuration (manually set headers to fix Render CORS issue) ---
+const allowedOrigins = [
+  'http://localhost:3000',
+  'https://naclo-frontend.onrender.com',
+]
+
 app.use((req, res, next) => {
-  res.setHeader(
-    'Access-Control-Allow-Origin',
-    'https://naclo-frontend.onrender.com'
-  )
+  const origin = req.headers.origin
+  if (allowedOrigins.includes(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin)
+  }
+
   res.setHeader('Access-Control-Allow-Credentials', 'true')
   res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS,PUT,DELETE')
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+
   if (req.method === 'OPTIONS') {
     return res.sendStatus(200)
   }

@@ -17,26 +17,23 @@ const Announcements = () => {
   useEffect(() => {
     const fetchAnnouncements = async () => {
       try {
-        const apiUrl = 'https://naclo-platform.onrender.com' // Access the API URL from environment variable
-        console.log('API URL:', apiUrl) // Ensure this logs the correct URL
-        if (!apiUrl) {
-          console.error('API URL is not defined')
-          return
-        }
+        const baseUrl = process.env.NEXT_PUBLIC_API_URL ?? ''
+        const apiUrl = `${baseUrl.replace(/\/+$/, '')}/api/announcements`
 
-        const response = await axios.get(`${apiUrl}/api/announcements`)
+        console.log('📣 Fetching announcements from:', apiUrl)
+
+        const response = await axios.get(apiUrl)
         setAnnouncements(response.data)
       } catch (error) {
-        console.error('Error fetching announcements:', error)
+        console.error('❌ Error fetching announcements:', error)
       }
     }
 
     fetchAnnouncements()
 
-    // Check user role (assuming role is stored in localStorage)
     const userRole = localStorage.getItem('role')
-    setIsWebmaster(userRole === '1') // Webmaster role is "1"
-  }, []) // Empty array ensures the effect runs once when the component mounts
+    setIsWebmaster(userRole === '1')
+  }, [])
 
   const addAnnouncement = async () => {
     if (!newAnnouncement.trim()) return
