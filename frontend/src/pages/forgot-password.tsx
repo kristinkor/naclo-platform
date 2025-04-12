@@ -37,7 +37,7 @@ export default function ForgotPassword() {
   }
 
   return (
-    <Container maxWidth="sm" sx={{ mt: 8 }}>
+    <Container maxWidth="sm" sx={{ mt: 8, mb: 8 }}>
       <Typography variant="h4" gutterBottom>
         Forgot Password
       </Typography>

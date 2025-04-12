@@ -205,33 +205,41 @@ export const requestPasswordReset = async (req, res) => {
     const { email } = req.body
     const user = await prisma.user.findUnique({ where: { email } })
 
-    if (!user) return res.status(404).json({ message: 'User not found' })
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' })
+    }
 
     const resetToken = crypto.randomBytes(32).toString('hex')
-    const resetExpires = new Date(Date.now() + 3600000)
+    const resetExpires = new Date(Date.now() + 3600000) // 1 hour
 
     await prisma.user.update({
       where: { email },
       data: { resetToken, resetExpires },
     })
 
-    const resetUrl = `https://naclo-frontend.onrender.com/reset-password?token=${resetToken}`
+    const resetUrl = `${process.env.FRONTEND_URL?.replace(/\/+$/, '')}/reset-password?token=${resetToken}`
 
     const resend = new Resend(process.env.RESEND_API_KEY)
 
-    await resend.emails.send({
-      from: process.env.EMAIL_FROM,
-      to: email,
-      subject: 'Reset your NACLO password',
-      html: `
-        <p>Hello,</p>
-        <p>We received a request to reset your password.</p>
-        <p><a href="${resetUrl}">Click here to reset your password</a></p>
-        <p>This link will expire in 1 hour.</p>
-      `,
-    })
-
-    console.log('📧 Password reset email sent to:', email)
+    try {
+      await resend.emails.send({
+        from: process.env.EMAIL_FROM,
+        to: email,
+        subject: 'Reset your NACLO password',
+        html: `
+          <p>Hello,</p>
+          <p>We received a request to reset your password.</p>
+          <p><a href="${resetUrl}">Click here to reset your password</a></p>
+          <p>This link will expire in 1 hour.</p>
+        `,
+      })
+      console.log('📧 Password reset email sent to:', email)
+    } catch (sendErr) {
+      console.error('❌ Failed to send password reset email:', sendErr)
+      return res.status(500).json({
+        message: 'Failed to send reset email. Please try again later.',
+      })
+    }
 
     return res.json({
       message: 'Reset link sent! Please check your email.',
