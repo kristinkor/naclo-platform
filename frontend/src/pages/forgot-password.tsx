@@ -20,6 +20,10 @@ export default function ForgotPassword() {
     setMessage('')
 
     try {
+      console.log(
+        'Forgot Password POST to:',
+        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/forgot-password`
+      )
       const res = await axios.post(
         `${process.env.NEXT_PUBLIC_API_URL}/api/auth/forgot-password`,
         { email }
