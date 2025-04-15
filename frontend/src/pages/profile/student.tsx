@@ -16,6 +16,7 @@ import {
   Checkbox,
   ListItemText,
 } from '@mui/material'
+import { SelectChangeEvent } from '@mui/material/Select'
 
 const languagesList = [
   'English',
@@ -55,7 +56,6 @@ export default function StudentProfile() {
   })
   const [editMode, setEditMode] = useState(false)
   const [loading, setLoading] = useState(true)
-  const [sites, setSites] = useState([])
   const router = useRouter()
 
   useEffect(() => {
@@ -94,7 +94,7 @@ export default function StudentProfile() {
     setForm((prev) => ({ ...prev, [name]: value }))
   }
 
-  const handleLanguagesChange = (e: any) => {
+  const handleLanguagesChange = (e: SelectChangeEvent<string[]>) => {
     const value = e.target.value
     setForm((prev) => ({
       ...prev,
