@@ -1,6 +1,7 @@
 import express from 'express'
 import { authenticateToken } from '../middlewares/auth.middleware.js'
 import { PrismaClient } from '@prisma/client'
+import { updateStudentProfile } from '../controllers/user.controller.js'
 
 const router = express.Router()
 const prisma = new PrismaClient()
@@ -57,7 +58,7 @@ router.get('/:id/host', authenticateToken, async (req, res) => {
     res.status(500).json({ message: 'Internal Server Error' })
   }
 })
-
+router.put('/me', authenticateToken, updateStudentProfile)
 // ✅ Get current authenticated user profile
 router.get('/me', authenticateToken, async (req, res) => {
   try {
