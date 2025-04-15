@@ -1,14 +1,12 @@
+// src/pages/register.tsx
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import axios from 'axios'
-
-import { SelectChangeEvent } from '@mui/material/Select'
-
 import {
   Container,
+  Typography,
   TextField,
   Button,
-  Typography,
   MenuItem,
   Select,
   InputLabel,
@@ -20,11 +18,6 @@ import {
   CircularProgress,
 } from '@mui/material'
 import { Visibility, VisibilityOff } from '@mui/icons-material'
-
-type Site = {
-  id: number
-  name: string
-}
 
 const languagesList = [
   'English',
@@ -39,7 +32,12 @@ const languagesList = [
   'Italian',
 ]
 
-type FormType = {
+type Site = {
+  id: number
+  name: string
+}
+
+type FormData = {
   firstName: string
   lastName: string
   email: string
@@ -47,19 +45,17 @@ type FormType = {
   confirmPassword: string
   phone: string
   siteId: string
-  gender: string
-  pastComp: string
-  languages: string[]
-  grade: string
+  country: string
   city: string
   state: string
   zip: string
-  country: string
   birthdate: string
+  grade: string
+  languages: string[]
 }
 
 export default function Register() {
-  const [form, setForm] = useState<FormType>({
+  const [form, setForm] = useState<FormData>({
     firstName: '',
     lastName: '',
     email: '',
@@ -67,24 +63,21 @@ export default function Register() {
     confirmPassword: '',
     phone: '',
     siteId: '',
-    gender: '',
-    pastComp: '',
-    languages: [],
-    grade: '',
+    country: '',
     city: '',
     state: '',
     zip: '',
-    country: '',
     birthdate: '',
+    grade: '',
+    languages: [],
   })
 
   const [sites, setSites] = useState<Site[]>([])
-  const [loading, setLoading] = useState(false)
   const [errors, setErrors] = useState<{ [key: string]: string }>({})
+  const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
-
   const router = useRouter()
 
   useEffect(() => {
@@ -100,22 +93,23 @@ export default function Register() {
         setSites([])
       }
     }
+
     fetchSites()
   }, [])
 
-  const handleTextChange = (
+  const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target
     setForm((prev) => ({ ...prev, [name]: value }))
   }
 
-  const handleSelectChange = (e: SelectChangeEvent) => {
+  const handleSelectChange = (e: any) => {
     const { name, value } = e.target
     setForm((prev) => ({ ...prev, [name]: value }))
   }
 
-  const handleLanguagesChange = (e: SelectChangeEvent<string[]>) => {
+  const handleLanguagesChange = (e: any) => {
     const { value } = e.target
     setForm((prev) => ({
       ...prev,
@@ -134,7 +128,7 @@ export default function Register() {
 
     if (!form.password) newErrors.password = 'Password is required.'
     else if (form.password.length < 8)
-      newErrors.password = 'Password must be at least 8 characters.'
+      newErrors.password = 'Minimum 8 characters required.'
 
     if (!form.confirmPassword)
       newErrors.confirmPassword = 'Please confirm your password.'
@@ -142,7 +136,7 @@ export default function Register() {
       newErrors.confirmPassword = 'Passwords do not match.'
 
     if (!form.siteId) newErrors.siteId = 'Please select a site.'
-    if (!form.country) newErrors.country = 'Please select a country.'
+    if (!form.country) newErrors.country = 'Country is required.'
     if (!form.city) newErrors.city = 'City is required.'
     if (!form.state) newErrors.state = 'State is required.'
     if (!form.zip) newErrors.zip = 'ZIP is required.'
@@ -155,8 +149,8 @@ export default function Register() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setLoading(true)
     setErrors({})
+    setLoading(true)
     setSuccess('')
 
     if (!validateForm()) {
@@ -167,33 +161,24 @@ export default function Register() {
     try {
       const payload = {
         ...form,
-        siteId: form.siteId ? parseInt(form.siteId) : null,
+        siteId: parseInt(form.siteId),
         countryOfIOL: form.country,
         roleId: 3,
       }
 
-      const baseUrl = (process.env.NEXT_PUBLIC_API_URL || '').replace(
-        /\/+$/,
-        ''
-      )
-      const endpoint = '/api/auth/register'
-      const url = `${baseUrl}${endpoint}`
+      const baseUrl = process.env.NEXT_PUBLIC_API_URL ?? ''
+      const url = `${baseUrl.replace(/\/+$/, '')}/api/auth/register`
       const res = await axios.post(url, payload, {
         withCredentials: true,
         headers: { 'Content-Type': 'application/json' },
       })
-      console.log('🌐 API URL:', baseUrl)
-      console.log('🧭 Final URL:', url)
-      console.log('📦 Payload:', payload)
-      setSuccess(
-        res.data.message ||
-          '✅ Registration successful! Please check your email.'
-      )
+
+      setSuccess(res.data.message || 'Registration successful! Check email.')
 
       setTimeout(() => router.push('/login'), 3000)
     } catch (err) {
-      console.error('❌ Registration error:', err)
-      setErrors({ global: 'Registration failed. Please try again later.' })
+      console.error('Registration error:', err)
+      setErrors({ global: 'Registration failed. Try again later.' })
     } finally {
       setLoading(false)
     }
@@ -214,124 +199,115 @@ export default function Register() {
 
       <form onSubmit={handleSubmit} noValidate>
         <TextField
-          name="firstName"
           label="First Name"
+          name="firstName"
           value={form.firstName}
-          onChange={handleTextChange}
+          onChange={handleChange}
           fullWidth
           margin="normal"
           error={!!errors.firstName}
           helperText={errors.firstName}
         />
         <TextField
-          name="lastName"
           label="Last Name"
+          name="lastName"
           value={form.lastName}
-          onChange={handleTextChange}
+          onChange={handleChange}
           fullWidth
           margin="normal"
           error={!!errors.lastName}
           helperText={errors.lastName}
         />
         <TextField
-          name="email"
           label="Email"
+          name="email"
+          type="email"
           value={form.email}
-          onChange={handleTextChange}
+          onChange={handleChange}
           fullWidth
           margin="normal"
           error={!!errors.email}
           helperText={errors.email}
         />
         <TextField
-          name="phone"
           label="Phone"
+          name="phone"
           value={form.phone}
-          onChange={handleTextChange}
+          onChange={handleChange}
           fullWidth
           margin="normal"
         />
-
         <FormControl fullWidth margin="normal" error={!!errors.siteId}>
           <InputLabel>Site</InputLabel>
           <Select
             name="siteId"
             value={form.siteId}
             onChange={handleSelectChange}
-            label="Site"
           >
-            {sites.length > 0 ? (
-              sites.map((site) => (
-                <MenuItem key={site.id} value={site.id.toString()}>
-                  {site.name}
-                </MenuItem>
-              ))
-            ) : (
-              <MenuItem disabled>Sites loading or unavailable</MenuItem>
-            )}
+            {sites.map((site) => (
+              <MenuItem key={site.id} value={site.id.toString()}>
+                {site.name}
+              </MenuItem>
+            ))}
           </Select>
           {errors.siteId && (
-            <Typography color="error" variant="caption">
+            <Typography variant="caption" color="error">
               {errors.siteId}
             </Typography>
           )}
         </FormControl>
-
         <FormControl fullWidth margin="normal" error={!!errors.country}>
           <InputLabel>Country</InputLabel>
           <Select
             name="country"
             value={form.country}
             onChange={handleSelectChange}
-            label="Country"
           >
             <MenuItem value="USA">USA</MenuItem>
             <MenuItem value="Canada">Canada</MenuItem>
           </Select>
           {errors.country && (
-            <Typography color="error" variant="caption">
+            <Typography variant="caption" color="error">
               {errors.country}
             </Typography>
           )}
         </FormControl>
-
         <TextField
-          name="city"
           label="City"
+          name="city"
           value={form.city}
-          onChange={handleTextChange}
+          onChange={handleChange}
           fullWidth
           margin="normal"
           error={!!errors.city}
           helperText={errors.city}
         />
         <TextField
-          name="state"
           label="State"
+          name="state"
           value={form.state}
-          onChange={handleTextChange}
+          onChange={handleChange}
           fullWidth
           margin="normal"
           error={!!errors.state}
           helperText={errors.state}
         />
         <TextField
-          name="zip"
           label="ZIP"
+          name="zip"
           value={form.zip}
-          onChange={handleTextChange}
+          onChange={handleChange}
           fullWidth
           margin="normal"
           error={!!errors.zip}
           helperText={errors.zip}
         />
-
         <TextField
-          name="birthdate"
           label="Birthdate"
+          name="birthdate"
           type="date"
           value={form.birthdate}
-          onChange={handleTextChange}
+          onChange={handleChange}
           fullWidth
           margin="normal"
           InputLabelProps={{ shrink: true }}
@@ -339,17 +315,16 @@ export default function Register() {
           helperText={errors.birthdate}
         />
         <TextField
-          name="grade"
           label="Grade"
+          name="grade"
           type="number"
           value={form.grade}
-          onChange={handleTextChange}
+          onChange={handleChange}
           fullWidth
           margin="normal"
           error={!!errors.grade}
           helperText={errors.grade}
         />
-
         <FormControl fullWidth margin="normal">
           <InputLabel>Languages</InputLabel>
           <Select
@@ -367,13 +342,12 @@ export default function Register() {
             ))}
           </Select>
         </FormControl>
-
         <TextField
-          name="password"
           label="Password"
+          name="password"
           type={showPassword ? 'text' : 'password'}
           value={form.password}
-          onChange={handleTextChange}
+          onChange={handleChange}
           fullWidth
           margin="normal"
           error={!!errors.password}
@@ -381,23 +355,19 @@ export default function Register() {
           InputProps={{
             endAdornment: (
               <InputAdornment position="end">
-                <IconButton
-                  onClick={() => setShowPassword((p) => !p)}
-                  edge="end"
-                >
+                <IconButton onClick={() => setShowPassword(!showPassword)}>
                   {showPassword ? <VisibilityOff /> : <Visibility />}
                 </IconButton>
               </InputAdornment>
             ),
           }}
         />
-
         <TextField
-          name="confirmPassword"
           label="Confirm Password"
+          name="confirmPassword"
           type={showConfirmPassword ? 'text' : 'password'}
           value={form.confirmPassword}
-          onChange={handleTextChange}
+          onChange={handleChange}
           fullWidth
           margin="normal"
           error={!!errors.confirmPassword}
@@ -406,8 +376,7 @@ export default function Register() {
             endAdornment: (
               <InputAdornment position="end">
                 <IconButton
-                  onClick={() => setShowConfirmPassword((p) => !p)}
-                  edge="end"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                 >
                   {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
                 </IconButton>
@@ -415,13 +384,11 @@ export default function Register() {
             ),
           }}
         />
-
         <Button
           type="submit"
           variant="contained"
           fullWidth
-          color="primary"
-          sx={{ mt: 2 }}
+          sx={{ mt: 3 }}
           disabled={loading}
         >
           {loading ? <CircularProgress size={20} /> : 'Register'}
