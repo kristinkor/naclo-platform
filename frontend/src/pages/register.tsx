@@ -135,8 +135,9 @@ export default function Register() {
       newErrors.confirmPassword = 'Please confirm your password.'
     else if (form.password !== form.confirmPassword)
       newErrors.confirmPassword = 'Passwords do not match.'
-
-    if (!form.siteId) newErrors.siteId = 'Please select a site.'
+    if (sites.length > 0 && !form.siteId) {
+      newErrors.siteId = 'Please select a site.'
+    }
     if (!form.country) newErrors.country = 'Country is required.'
     if (!form.city) newErrors.city = 'City is required.'
     if (!form.state) newErrors.state = 'State is required.'
@@ -162,7 +163,7 @@ export default function Register() {
     try {
       const payload = {
         ...form,
-        siteId: parseInt(form.siteId),
+        siteId: form.siteId ? parseInt(form.siteId) : null,
         countryOfIOL: form.country,
         roleId: 3,
       }
@@ -245,15 +246,20 @@ export default function Register() {
             value={form.siteId}
             onChange={handleSelectChange}
           >
-            {sites.map((site) => (
-              <MenuItem key={site.id} value={site.id.toString()}>
-                {site.name}
-              </MenuItem>
-            ))}
+            {sites.length > 0 ? (
+              sites.map((site) => (
+                <MenuItem key={site.id} value={site.id.toString()}>
+                  {site.name}
+                </MenuItem>
+              ))
+            ) : (
+              <MenuItem disabled>Sites are currently unavailable</MenuItem>
+            )}
           </Select>
-          {errors.siteId && (
-            <Typography variant="caption" color="error">
-              {errors.siteId}
+          {sites.length === 0 && (
+            <Typography variant="caption" color="warning.main" sx={{ mt: 1 }}>
+              Site list couldn’t be loaded. You can still register and assign a
+              site later.
             </Typography>
           )}
         </FormControl>
