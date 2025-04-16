@@ -16,6 +16,7 @@ import {
   InputAdornment,
   IconButton,
   CircularProgress,
+  SelectChangeEvent,
 } from '@mui/material'
 import { Visibility, VisibilityOff } from '@mui/icons-material'
 
@@ -104,12 +105,12 @@ export default function Register() {
     setForm((prev) => ({ ...prev, [name]: value }))
   }
 
-  const handleSelectChange = (e: any) => {
+  const handleSelectChange = (e: SelectChangeEvent<string>) => {
     const { name, value } = e.target
     setForm((prev) => ({ ...prev, [name]: value }))
   }
 
-  const handleLanguagesChange = (e: any) => {
+  const handleLanguagesChange = (e: SelectChangeEvent<string[]>) => {
     const { value } = e.target
     setForm((prev) => ({
       ...prev,

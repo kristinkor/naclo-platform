@@ -1,4 +1,5 @@
-import { Html, Head, Main, NextScript } from 'next/document'
+import { Html, Main, NextScript } from 'next/document'
+import Head from 'next/head'
 
 export default function Document() {
   return (
@@ -22,6 +23,7 @@ export default function Document() {
         />
         <meta name="language" content="en" />
         <meta httpEquiv="X-UA-Compatible" content="ie=edge" />
+
         <title>
           NACLO - North American Computational Linguistics Open Competition
         </title>

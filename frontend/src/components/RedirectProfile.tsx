@@ -20,7 +20,7 @@ export default function RedirectProfile() {
     if (destination) {
       router.replace(destination)
     }
-  }, [user])
+  }, [user, router])
 
-  return null // This component doesn't render anything
+  return null
 }
