@@ -20,6 +20,21 @@ const allowedOrigins = [
   'https://naclo-frontend.onrender.com',
 ]
 
+// ✅ Use official cors middleware first
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true)
+      } else {
+        callback(new Error('Not allowed by CORS'))
+      }
+    },
+    credentials: true,
+  })
+)
+
+// ✅ Then your manual CORS fallback (optional)
 app.use((req, res, next) => {
   const origin = req.headers.origin
   if (allowedOrigins.includes(origin)) {
