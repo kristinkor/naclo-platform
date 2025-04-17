@@ -13,8 +13,8 @@ export default function ResendConfirmation() {
         { email }
       )
       setMessage(res.data.message || 'Confirmation email resent.')
-    } catch (err) {
-      setMessage('Failed to resend confirmation. Try again.')
+    } catch {
+      setMessage('Something went wrong.')
     }
   }
 

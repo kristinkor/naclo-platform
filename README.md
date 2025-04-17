@@ -157,7 +157,3 @@ Special thanks to the NACLO team and organizers for their guidance and support.
 ## 📬 Contact
 
 Feel free to reach out if you'd like to test the system or provide feedback!
-
----
-
-Let me know if you'd like this copied to a file or exported to markdown/pdf!

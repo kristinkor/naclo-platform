@@ -17,6 +17,7 @@
     "@mui/icons-material": "^6.4.8",
     "@mui/material": "^6.4.6",
     "axios": "^1.8.1",
+    "lucide-react": "^0.488.0",
     "next": "15.2.1",
     "normalize.css": "^8.0.1",
     "react": "^19.0.0",

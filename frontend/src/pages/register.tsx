@@ -19,6 +19,7 @@ import {
   SelectChangeEvent,
 } from '@mui/material'
 import { Visibility, VisibilityOff } from '@mui/icons-material'
+import NextLink from 'next/link'
 
 const languagesList = [
   'English',
@@ -272,7 +273,16 @@ export default function Register() {
         />
         {errors.email && (
           <Typography variant="caption" color="error">
-            {errors.email} <a href="/forgot-password">Forgot Password?</a>
+            {errors.email}{' '}
+            <NextLink href="/forgot-password" passHref>
+              <Typography
+                component="a"
+                color="primary"
+                sx={{ textDecoration: 'underline', cursor: 'pointer' }}
+              >
+                Forgot Password?
+              </Typography>
+            </NextLink>
           </Typography>
         )}
         <TextField
