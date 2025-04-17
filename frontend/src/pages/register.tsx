@@ -85,7 +85,7 @@ export default function Register() {
     const fetchSites = async () => {
       try {
         const baseUrl = process.env.NEXT_PUBLIC_API_URL ?? ''
-        const url = `${baseUrl.replace(/\/+$/, '')}/api/sites`
+        const url = `${baseUrl.replace(/\/+/g, '')}/api/sites`
         const res = await axios.get(url, { withCredentials: true })
         const sitesData = res.data?.data
         setSites(Array.isArray(sitesData) ? sitesData : [])
@@ -118,6 +118,19 @@ export default function Register() {
     }))
   }
 
+  const handleResendConfirmation = async () => {
+    try {
+      const res = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/resend-confirmation`,
+        { email: form.email }
+      )
+      setSuccess(res.data.message || 'Confirmation email resent.')
+    } catch (err) {
+      console.error('❌ Resend error:', err)
+      setErrors({ global: 'Failed to resend confirmation email.' })
+    }
+  }
+
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {}
 
@@ -135,6 +148,7 @@ export default function Register() {
       newErrors.confirmPassword = 'Please confirm your password.'
     else if (form.password !== form.confirmPassword)
       newErrors.confirmPassword = 'Passwords do not match.'
+
     if (sites.length > 0 && !form.siteId) {
       newErrors.siteId = 'Please select a site.'
     }
@@ -169,18 +183,32 @@ export default function Register() {
       }
 
       const baseUrl = process.env.NEXT_PUBLIC_API_URL ?? ''
-      const url = `${baseUrl.replace(/\/+$/, '')}/api/auth/register`
+      const url = `${baseUrl.replace(/\/+/g, '')}/api/auth/register`
+
       const res = await axios.post(url, payload, {
         withCredentials: true,
         headers: { 'Content-Type': 'application/json' },
       })
 
       setSuccess(res.data.message || 'Registration successful! Check email.')
-
       setTimeout(() => router.push('/login'), 3000)
     } catch (err) {
+      if (axios.isAxiosError(err)) {
+        const serverMsg = err.response?.data?.message
+        if (serverMsg?.toLowerCase().includes('already')) {
+          setErrors({
+            email: serverMsg,
+            global: 'Already registered. Try to log in or resend confirmation.',
+          })
+        } else {
+          setErrors({
+            global: serverMsg || 'Registration failed. Try again later.',
+          })
+        }
+      } else {
+        setErrors({ global: 'Registration failed. Try again later.' })
+      }
       console.error('Registration error:', err)
-      setErrors({ global: 'Registration failed. Try again later.' })
     } finally {
       setLoading(false)
     }
@@ -197,6 +225,17 @@ export default function Register() {
         <Typography color="primary" sx={{ mt: 2 }}>
           {success}
         </Typography>
+      )}
+
+      {errors.email && (
+        <Button
+          variant="outlined"
+          color="secondary"
+          onClick={handleResendConfirmation}
+          sx={{ mt: 2 }}
+        >
+          Resend Confirmation Email
+        </Button>
       )}
 
       <form onSubmit={handleSubmit} noValidate>
@@ -231,6 +270,11 @@ export default function Register() {
           error={!!errors.email}
           helperText={errors.email}
         />
+        {errors.email && (
+          <Typography variant="caption" color="error">
+            {errors.email} <a href="/forgot-password">Forgot Password?</a>
+          </Typography>
+        )}
         <TextField
           label="Phone"
           name="phone"

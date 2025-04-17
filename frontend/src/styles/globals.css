@@ -48,6 +48,7 @@ h2 {
   justify-content: center;
   align-items: center;
   position: relative; /* Ensure the navbar stays on top */
+  min-width: 1140px;
 }
 
 /* Add some spacing and align the buttons */

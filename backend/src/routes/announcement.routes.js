@@ -3,6 +3,7 @@ import {
   getAnnouncements,
   addAnnouncement,
   deleteAnnouncement,
+  reloadAnnouncements,
 } from '../controllers/announcement.controller.js'
 import { authenticateToken } from '../middlewares/auth.middleware.js' // Named import
 
@@ -16,5 +17,7 @@ router.post('/', authenticateToken, addAnnouncement) // Corrected here
 
 // Route to delete an announcement by index, requiring authentication
 router.delete('/:index', authenticateToken, deleteAnnouncement) // Corrected here
+
+router.post('/reload', authenticateToken, reloadAnnouncements)
 
 export default router
