@@ -7,7 +7,6 @@ const router = express.Router()
 const prisma = new PrismaClient()
 
 // 🔥 Host Dashboard: Fetch site and students for a host
-// IMPORTANT: Place this BEFORE any /:id or dynamic routes to avoid conflicts
 router.get('/:id/host', authenticateToken, async (req, res) => {
   const hostId = parseInt(req.params.id)
 
@@ -58,7 +57,10 @@ router.get('/:id/host', authenticateToken, async (req, res) => {
     res.status(500).json({ message: 'Internal Server Error' })
   }
 })
+
+// ✅ Update current user's student profile
 router.put('/me', authenticateToken, updateStudentProfile)
+
 // ✅ Get current authenticated user profile
 router.get('/me', authenticateToken, async (req, res) => {
   try {
@@ -115,7 +117,6 @@ router.get('/', authenticateToken, async (req, res) => {
           select: {
             city: true,
             state: true,
-            zip: true,
             countryOfIOL: true,
             birthdate: true,
             grade: true,
@@ -130,6 +131,54 @@ router.get('/', authenticateToken, async (req, res) => {
   } catch (error) {
     console.error('❌ Error fetching users:', error)
     res.status(500).json({ message: 'Internal Server Error' })
+  }
+})
+
+// ✅ Webmaster: Update any user and their student profile
+router.put('/:id', authenticateToken, async (req, res) => {
+  const userId = parseInt(req.params.id)
+  const { firstName, lastName, email, roleId, studentData } = req.body
+
+  try {
+    await prisma.user.update({
+      where: { id: userId },
+      data: { firstName, lastName, email, roleId },
+    })
+
+    if (studentData) {
+      await prisma.student.update({
+        where: { userId },
+        data: {
+          city: studentData.city,
+          state: studentData.state,
+          countryOfIOL: studentData.countryOfIOL,
+          birthdate: new Date(studentData.birthdate),
+          school: studentData.school,
+          grade: parseInt(studentData.grade),
+          languages: studentData.languages?.join(',') || '',
+          siteId: studentData.siteId ? parseInt(studentData.siteId) : null,
+        },
+      })
+    }
+
+    res.json({ message: 'User updated successfully' })
+  } catch (error) {
+    console.error('❌ Update user error:', error)
+    res.status(500).json({ message: 'Failed to update user' })
+  }
+})
+router.delete('/users/:id', authenticateToken, async (req, res) => {
+  try {
+    const id = parseInt(req.params.id)
+    if (req.user.roleId !== 1) {
+      return res.status(403).json({ message: 'Forbidden' })
+    }
+
+    await prisma.user.delete({ where: { id } })
+    res.json({ message: 'User deleted successfully' })
+  } catch (error) {
+    console.error('❌ Error deleting user:', error)
+    res.status(500).json({ message: 'Failed to delete user' })
   }
 })
 
