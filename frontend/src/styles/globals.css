@@ -34,6 +34,13 @@ a {
   line-height: 1.4;
 }
 
+/* NavBar container */
+.header {
+  display: flex;
+  min-height: 64px;
+  align-items: center;
+}
+
 /* NavBar */
 .logo {
   max-width: 100%;
@@ -60,6 +67,96 @@ a {
 }
 
 .navbar button:hover {
+  color: #7125ce;
+}
+
+.nav-list {
+  display: flex;
+  list-style: none;
+  margin: 0 20px 0 0;
+  padding: 0;
+  font-family: 'Work Sans', sans-serif;
+}
+
+/* Пункты меню */
+.nav-item {
+  position: relative;
+  margin: 0 18px;
+}
+
+.nav-link {
+  font-weight: 700;
+  font-size: 1.25rem;
+  text-transform: uppercase;
+  color: #2a2a2a;
+  cursor: pointer;
+  padding: 14px 10px 18px 10px;
+  display: inline-block;
+  letter-spacing: 0.04em;
+  font-family: 'Work Sans', sans-serif;
+  transition: color 0.14s;
+}
+
+.nav-link:hover,
+.nav-link.active {
+  color: #7125ce;
+}
+
+/* Выпадающее меню */
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  top: 54px; /* сразу под меню (учти высоту .header/min-height) */
+  left: 0;
+  min-width: 300px;
+  background: #fff;
+  box-shadow: 0 6px 32px 0 rgba(80, 20, 100, 0.1),
+    0 1.5px 5px 0 rgba(80, 20, 100, 0.06);
+  border-radius: 0;
+  padding: 8px 0;
+  z-index: 200;
+  border: none;
+  animation: fadeInMenu 0.2s cubic-bezier(0.36, 0.53, 0.46, 0.95);
+}
+
+.nav-item:hover > .dropdown-menu,
+.nav-item:focus-within > .dropdown-menu,
+.dropdown-menu.show {
+  display: block;
+}
+
+@keyframes fadeInMenu {
+  0% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dropdown-menu li {
+  list-style: none;
+}
+
+.dropdown-menu a {
+  display: block;
+  padding: 13px 26px 13px 22px;
+  color: #2a2a2a;
+  text-decoration: none;
+  font-family: 'Work Sans', sans-serif;
+  font-size: 1.45rem;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  transition: background 0.13s, color 0.14s;
+  border: none;
+  background: transparent;
+}
+
+.dropdown-menu a:hover,
+.dropdown-menu a:focus {
+  background: #f3f1fa;
   color: #7125ce;
 }
 

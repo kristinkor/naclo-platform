@@ -86,7 +86,7 @@ export default function Register() {
     const fetchSites = async () => {
       try {
         const baseUrl = process.env.NEXT_PUBLIC_API_URL ?? ''
-        const url = `${baseUrl.replace(/\/+/g, '')}/api/sites`
+        const url = `${baseUrl.replace(/\/+$/, '')}/api/sites`
         const res = await axios.get(url, { withCredentials: true })
         const sitesData = res.data?.data
         setSites(Array.isArray(sitesData) ? sitesData : [])
@@ -293,30 +293,67 @@ export default function Register() {
           fullWidth
           margin="normal"
         />
-        <FormControl fullWidth margin="normal" error={!!errors.siteId}>
-          <InputLabel>Site</InputLabel>
+        <FormControl
+          fullWidth
+          margin="normal"
+          error={!!errors.siteId}
+          variant="outlined"
+        >
+          <InputLabel id="site-select-label" shrink>
+            Site
+          </InputLabel>
           <Select
+            labelId="site-select-label"
+            id="site-select"
             name="siteId"
             value={form.siteId}
             onChange={handleSelectChange}
+            label="Site"
+            displayEmpty
+            notched
+            disabled={sites.length === 0}
+            renderValue={(selected) => {
+              if (!selected) {
+                return <span style={{ color: '#aaa' }}>Select a site</span>
+              }
+              const selectedSite = sites.find(
+                (s) => s.id.toString() === selected
+              )
+              return selectedSite ? selectedSite.name : ''
+            }}
           >
-            {sites.length > 0 ? (
-              sites.map((site) => (
-                <MenuItem key={site.id} value={site.id.toString()}>
-                  {site.name}
-                </MenuItem>
-              ))
+            {sites.length === 0 ? (
+              <MenuItem disabled value="">
+                <span style={{ color: '#aaa' }}>
+                  Sites are currently unavailable
+                </span>
+              </MenuItem>
             ) : (
-              <MenuItem disabled>Sites are currently unavailable</MenuItem>
+              [
+                <MenuItem key="" value="">
+                  <em>Select a site</em>
+                </MenuItem>,
+                ...sites.map((site) => (
+                  <MenuItem key={site.id} value={site.id.toString()}>
+                    {site.name}
+                  </MenuItem>
+                )),
+              ]
             )}
           </Select>
+          {errors.siteId && (
+            <Typography variant="caption" color="error">
+              {errors.siteId}
+            </Typography>
+          )}
           {sites.length === 0 && (
             <Typography variant="caption" color="warning.main" sx={{ mt: 1 }}>
-              Site list couldn’t be loaded. You can still register and assign a
-              site later.
+              Sites are currently unavailable. You can still register and assign
+              a site later.
             </Typography>
           )}
         </FormControl>
+
         <FormControl fullWidth margin="normal" error={!!errors.country}>
           <InputLabel>Country</InputLabel>
           <Select

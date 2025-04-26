@@ -40,7 +40,7 @@ export default function Navbar() {
         zIndex: (theme) => theme.zIndex.drawer + 1,
       }}
     >
-      <Toolbar>
+      <div className="header wrapper">
         <Link href="/">
           <Image
             className="logo"
@@ -59,6 +59,13 @@ export default function Navbar() {
           anchorEl={anchorEl}
           open={Boolean(anchorEl) && currentMenu === 'about'}
           onClose={handleClose}
+          PaperProps={{
+            sx: {
+              mt: '0px',
+              boxShadow: 3,
+              top: '64px !important',
+            },
+          }}
         >
           <MenuItem component={Link} href="/about-naclo">
             About NACLO
@@ -81,6 +88,13 @@ export default function Navbar() {
           anchorEl={anchorEl}
           open={Boolean(anchorEl) && currentMenu === 'sites'}
           onClose={handleClose}
+          PaperProps={{
+            sx: {
+              mt: '0px',
+              boxShadow: 3,
+              top: '64px !important',
+            },
+          }}
         >
           <MenuItem component={Link} href="/university-sites">
             University Sites
@@ -100,6 +114,15 @@ export default function Navbar() {
           anchorEl={anchorEl}
           open={Boolean(anchorEl) && currentMenu === 'competitions'}
           onClose={handleClose}
+          PaperProps={{
+            sx: {
+              mt: '0px',
+              boxShadow: 3,
+              top: '64px !important',
+            },
+          }}
+          anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
+          transformOrigin={{ vertical: 'top', horizontal: 'left' }}
         >
           <MenuItem component={Link} href="/upcoming-competition">
             Upcoming Competition 2025
@@ -119,6 +142,15 @@ export default function Navbar() {
           anchorEl={anchorEl}
           open={Boolean(anchorEl) && currentMenu === 'sponsors'}
           onClose={handleClose}
+          PaperProps={{
+            sx: {
+              mt: '0px',
+              boxShadow: 3,
+              top: '64px !important',
+            },
+          }}
+          anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
+          transformOrigin={{ vertical: 'top', horizontal: 'left' }}
         >
           <MenuItem component={Link} href="/current-press">
             Current Press
@@ -144,6 +176,13 @@ export default function Navbar() {
           anchorEl={anchorEl}
           open={Boolean(anchorEl) && currentMenu === 'resources'}
           onClose={handleClose}
+          PaperProps={{
+            sx: {
+              mt: '0px',
+              boxShadow: 3,
+              top: '64px !important',
+            },
+          }}
         >
           <MenuItem component={Link} href="/register">
             Student Registration
@@ -194,7 +233,7 @@ export default function Navbar() {
             </Button>
           )}
         </div>
-      </Toolbar>
+      </div>
     </AppBar>
   )
 }
