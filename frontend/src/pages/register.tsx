@@ -184,7 +184,7 @@ export default function Register() {
       }
 
       const baseUrl = process.env.NEXT_PUBLIC_API_URL ?? ''
-      const url = `${baseUrl.replace(/\/+/g, '')}/api/auth/register`
+      const url = `${baseUrl.replace(/\/+$/, '')}/api/auth/register`
 
       const res = await axios.post(url, payload, {
         withCredentials: true,
