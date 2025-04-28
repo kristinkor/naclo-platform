@@ -72,7 +72,7 @@ export default function Footer() {
                 <Link href="/donate">Donate</Link>
               </li>
               <li className="menu-item menu-item-type-post_type menu-item-object-page ">
-                <Link href="/donate">Login</Link>
+                <Link href="/login">Login</Link>
               </li>
             </ul>{' '}
           </div>
