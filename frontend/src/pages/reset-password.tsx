@@ -30,7 +30,7 @@ export default function ResetPasswordPage() {
     try {
       setLoading(true)
       const res = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/reset-confirm`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/reset-password`,
         { token, newPassword: password }
       )
       setMessage(res.data.message || 'Password reset successful')
