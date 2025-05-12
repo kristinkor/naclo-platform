@@ -37,6 +37,11 @@ interface Site {
   website?: string
 }
 
+interface FullSite extends FormFields {
+  id: number
+  hosts?: Host[]
+}
+
 type FormFields = {
   name: string
   country: string
@@ -158,21 +163,21 @@ export default function AdminSitesPage() {
       setForm(emptyForm())
       setEditingId(null)
       setTab(1)
-    } catch (_) {
+    } catch {
       setMessage('❌ Failed to save site.')
     } finally {
       setLoading(false)
     }
   }
 
-  const handleEdit = (site: any) => {
+  const handleEdit = (site: FullSite) => {
     setEditingId(site.id)
     setForm({
       ...site,
       capacity: String(site.capacity),
       latitude: String(site.latitude),
       longitude: String(site.longitude),
-      hostIds: site.hosts?.map((h: any) => h.id) || [],
+      hostIds: site.hosts?.map((h: Host) => h.id) || [],
     })
     setTab(0)
   }
@@ -182,7 +187,7 @@ export default function AdminSitesPage() {
     try {
       await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/api/sites/${id}`)
       fetchSites()
-    } catch (_) {
+    } catch {
       alert('Failed to delete site.')
     }
   }
@@ -266,7 +271,7 @@ export default function AdminSitesPage() {
               <Grid item xs={12}>
                 <FormControl fullWidth required>
                   <InputLabel>Hosts</InputLabel>
-                  <Select
+                  <Select<string[]>
                     multiple
                     name="hostIds"
                     value={form.hostIds.map(String)}
@@ -326,7 +331,7 @@ export default function AdminSitesPage() {
                 {site.city}, {site.state}
               </Typography>
               <Box sx={{ mt: 1 }}>
-                <IconButton onClick={() => handleEdit(site)}>
+                <IconButton onClick={() => handleEdit(site as FullSite)}>
                   <Edit />
                 </IconButton>
                 <IconButton onClick={() => handleDelete(site.id)}>
