@@ -1,8 +1,8 @@
-// components/SiteMap.tsx
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
+import type { LatLngExpression } from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import L from 'leaflet'
 import axios from 'axios'
@@ -10,7 +10,7 @@ import axios from 'axios'
 import iconUrl from 'leaflet/dist/images/marker-icon.png'
 import iconShadowUrl from 'leaflet/dist/images/marker-shadow.png'
 
-// Fix for Leaflet default icon not loading in Next.js
+// Fix Leaflet icon path
 L.Icon.Default.mergeOptions({
   iconUrl,
   shadowUrl: iconShadowUrl,
@@ -36,9 +36,7 @@ const SiteMap = () => {
         const baseUrl = process.env.NEXT_PUBLIC_API_URL ?? ''
         const url = `${baseUrl.replace(/\/+$/, '')}/api/sites`
         const res = await axios.get(url)
-        const incomingSites = res.data.data || []
-
-        setSites(incomingSites)
+        setSites(res.data.data || [])
       } catch (err) {
         console.error('Failed to load sites:', err)
       }
@@ -46,7 +44,9 @@ const SiteMap = () => {
 
     fetchSites()
   }, [])
-  const mapCenter: [number, number] = [39.8283, -98.5795]
+
+  const mapCenter: LatLngExpression = [39.8283, -98.5795]
+
   return (
     <div style={{ marginTop: '2rem', marginBottom: '2rem' }}>
       <h2>Explore NACLO Sites Across the US</h2>
