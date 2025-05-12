@@ -10,7 +10,7 @@ import axios from 'axios'
 import iconUrl from 'leaflet/dist/images/marker-icon.png'
 import iconShadowUrl from 'leaflet/dist/images/marker-shadow.png'
 
-// Fix Leaflet icon path
+// Fix Leaflet marker icon path for Next.js
 L.Icon.Default.mergeOptions({
   iconUrl,
   shadowUrl: iconShadowUrl,
@@ -50,6 +50,7 @@ const SiteMap = () => {
   return (
     <div style={{ marginTop: '2rem', marginBottom: '2rem' }}>
       <h2>Explore NACLO Sites Across the US</h2>
+
       <MapContainer
         center={mapCenter}
         zoom={4}
