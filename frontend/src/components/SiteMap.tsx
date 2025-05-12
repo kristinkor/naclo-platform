@@ -1,7 +1,13 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
+import dynamic from 'next/dynamic'
+import {
+  MapContainer as LeafletMap,
+  TileLayer,
+  Marker,
+  Popup,
+} from 'react-leaflet'
 import type { LatLngExpression } from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import L from 'leaflet'
@@ -10,7 +16,7 @@ import axios from 'axios'
 import iconUrl from 'leaflet/dist/images/marker-icon.png'
 import iconShadowUrl from 'leaflet/dist/images/marker-shadow.png'
 
-// Fix Leaflet marker icon path for Next.js
+// Fix icon loading
 L.Icon.Default.mergeOptions({
   iconUrl,
   shadowUrl: iconShadowUrl,
@@ -24,6 +30,8 @@ type Site = {
   city: string
   state: string
 }
+
+const mapCenter: LatLngExpression = [39.8283, -98.5795]
 
 const SiteMap = () => {
   const [sites, setSites] = useState<Site[]>([])
@@ -45,35 +53,40 @@ const SiteMap = () => {
     fetchSites()
   }, [])
 
-  const mapCenter: LatLngExpression = [39.8283, -98.5795]
-
   return (
     <div style={{ marginTop: '2rem', marginBottom: '2rem' }}>
       <h2>Explore NACLO Sites Across the US</h2>
-
-      <MapContainer
-        center={mapCenter}
-        zoom={4}
-        style={{ height: '500px', width: '100%' }}
-      >
-        <TileLayer
-          attribution="&copy; OpenStreetMap contributors"
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        />
-        {sites.map(
-          (site) =>
-            site.latitude &&
-            site.longitude && (
-              <Marker key={site.id} position={[site.latitude, site.longitude]}>
-                <Popup>
-                  <strong>{site.name}</strong>
-                  <br />
-                  {site.city}, {site.state}
-                </Popup>
-              </Marker>
-            )
-        )}
-      </MapContainer>
+      {
+        // 🔒 Wrap in function so JSX parsing doesn't fight with inference
+        (() => (
+          <LeafletMap
+            center={mapCenter}
+            zoom={4}
+            style={{ height: '500px', width: '100%' }}
+          >
+            <TileLayer
+              attribution="&copy; OpenStreetMap contributors"
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
+            {sites.map(
+              (site) =>
+                site.latitude &&
+                site.longitude && (
+                  <Marker
+                    key={site.id}
+                    position={[site.latitude, site.longitude]}
+                  >
+                    <Popup>
+                      <strong>{site.name}</strong>
+                      <br />
+                      {site.city}, {site.state}
+                    </Popup>
+                  </Marker>
+                )
+            )}
+          </LeafletMap>
+        ))()
+      }
     </div>
   )
 }
