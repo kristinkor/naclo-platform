@@ -49,10 +49,9 @@ model Role {
   users User[]   @relation("UserRoleRelation")
 }
 
-// 📍 Contest sites
 model Site {
   id          Int             @id @default(autoincrement())
-   name        String          @unique
+  name        String          @unique
   country     String
   city        String
   state       String
@@ -65,8 +64,11 @@ model Site {
   timezone    Timezone
   website     String?
 
-  students Student[]
-  hosts    User[]    @relation("SiteHosts") // ✅ Optional: site can have 0 or many hosts
+latitude  Float?
+longitude Float?      
+
+  students    Student[]
+  hosts       User[]          @relation("SiteHosts")
 }
 
 // 🔘 ENUMS
