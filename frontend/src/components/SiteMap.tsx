@@ -46,12 +46,12 @@ const SiteMap = () => {
 
     fetchSites()
   }, [])
-
+  const mapCenter: [number, number] = [39.8283, -98.5795]
   return (
     <div style={{ marginTop: '2rem', marginBottom: '2rem' }}>
       <h2>Explore NACLO Sites Across the US</h2>
       <MapContainer
-        center={[39.8283, -98.5795]}
+        center={mapCenter}
         zoom={4}
         style={{ height: '500px', width: '100%' }}
       >
