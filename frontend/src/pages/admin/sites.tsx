@@ -1,5 +1,5 @@
+// admin/sites.tsx
 import {
-  Box,
   Button,
   Container,
   Grid,
@@ -13,7 +13,13 @@ import {
   OutlinedInput,
   Checkbox,
   ListItemText,
+  Tabs,
+  Tab,
+  Box,
+  IconButton,
+  CircularProgress,
 } from '@mui/material'
+import { Edit, Delete } from '@mui/icons-material'
 import { SelectChangeEvent } from '@mui/material/Select'
 import { useEffect, useState } from 'react'
 import axios from 'axios'
@@ -21,6 +27,32 @@ import axios from 'axios'
 interface Host {
   id: number
   email: string
+}
+
+interface Site {
+  id: number
+  name: string
+  city: string
+  state: string
+  website?: string
+}
+
+type FormFields = {
+  name: string
+  country: string
+  city: string
+  state: string
+  zip: string
+  address: string
+  capacity: string
+  type: string
+  eligibility: string
+  openness: string
+  timezone: string
+  website: string
+  latitude: string
+  longitude: string
+  hostIds: number[]
 }
 
 const enumOptions = {
@@ -31,249 +63,280 @@ const enumOptions = {
 }
 
 export default function AdminSitesPage() {
-  const [form, setForm] = useState({
-    name: '',
-    country: '',
-    city: '',
-    state: '',
-    zip: '',
-    address: '',
-    capacity: '',
-    type: '',
-    eligibility: '',
-    openness: '',
-    timezone: '',
-    website: '',
-    latitude: '',
-    longitude: '',
-    hostIds: [] as number[],
-  })
-
+  const [tab, setTab] = useState(0)
+  const [form, setForm] = useState<FormFields>(emptyForm())
   const [hosts, setHosts] = useState<Host[]>([])
-  const [message, setMessage] = useState('')
+  const [sites, setSites] = useState<Site[]>([])
   const [loading, setLoading] = useState(false)
+  const [editingId, setEditingId] = useState<number | null>(null)
+  const [message, setMessage] = useState('')
+
+  function emptyForm(): FormFields {
+    return {
+      name: '',
+      country: '',
+      city: '',
+      state: '',
+      zip: '',
+      address: '',
+      capacity: '',
+      type: '',
+      eligibility: '',
+      openness: '',
+      timezone: '',
+      website: '',
+      latitude: '',
+      longitude: '',
+      hostIds: [],
+    }
+  }
 
   useEffect(() => {
+    fetchHosts()
+    fetchSites()
+  }, [])
+
+  const fetchHosts = () => {
     axios
       .get(`${process.env.NEXT_PUBLIC_API_URL}/api/users?role=HOST`)
       .then((res) => setHosts(res.data))
       .catch(() => setHosts([]))
-  }, [])
+  }
 
-  const handleChange = (e: any) => {
+  const fetchSites = () => {
+    axios
+      .get(`${process.env.NEXT_PUBLIC_API_URL}/api/sites`)
+      .then((res) => setSites(res.data.data || []))
+      .catch(() => setSites([]))
+  }
+
+  const handleTextChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target
     setForm((prev) => ({ ...prev, [name]: value }))
   }
 
-  const handleMultiSelect = (event: SelectChangeEvent<number[]>) => {
-    const {
-      target: { value },
-    } = event
+  const handleSelectChange = (e: SelectChangeEvent<string>) => {
+    const { name, value } = e.target
+    if (!name) return
+    setForm((prev) => ({ ...prev, [name]: value }))
+  }
 
-    setForm((prev) => ({
-      ...prev,
-      hostIds:
-        typeof value === 'string'
-          ? value.split(',').map(Number)
-          : value.map(Number),
-    }))
+  const handleMultiSelect = (event: SelectChangeEvent<string[]>) => {
+    const value = event.target.value as string[]
+    setForm((prev) => ({ ...prev, hostIds: value.map(Number) }))
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setMessage('')
     setLoading(true)
-
+    setMessage('')
     try {
       const payload = {
         ...form,
         capacity: parseInt(form.capacity),
         latitude: parseFloat(form.latitude),
         longitude: parseFloat(form.longitude),
-        hostIds: form.hostIds,
       }
 
-      const res = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/sites`,
-        payload
-      )
+      if (editingId) {
+        await axios.put(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/sites/${editingId}`,
+          payload
+        )
+        setMessage('✅ Site updated successfully!')
+      } else {
+        await axios.post(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/sites`,
+          payload
+        )
+        setMessage('✅ Site added successfully!')
+      }
 
-      setMessage('✅ Site added successfully!')
-      setForm({
-        name: '',
-        country: '',
-        city: '',
-        state: '',
-        zip: '',
-        address: '',
-        capacity: '',
-        type: '',
-        eligibility: '',
-        openness: '',
-        timezone: '',
-        website: '',
-        latitude: '',
-        longitude: '',
-        hostIds: [],
-      })
-    } catch (err) {
-      setMessage('❌ Failed to add site.')
+      fetchSites()
+      setForm(emptyForm())
+      setEditingId(null)
+      setTab(1)
+    } catch (_) {
+      setMessage('❌ Failed to save site.')
     } finally {
       setLoading(false)
     }
   }
 
-  return (
-    <Container sx={{ mt: 8, mb: 8 }}>
-      <Typography variant="h4" textAlign="center" gutterBottom>
-        Add New Contest Site
-      </Typography>
-      <Paper sx={{ p: 4, maxWidth: 900, mx: 'auto' }} elevation={3}>
-        <form onSubmit={handleSubmit}>
-          <Grid container spacing={2}>
-            {/* Basic Info */}
-            <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                name="name"
-                label="Site Name"
-                value={form.name}
-                onChange={handleChange}
-                required
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                name="website"
-                label="Website (optional)"
-                value={form.website}
-                onChange={handleChange}
-              />
-            </Grid>
+  const handleEdit = (site: any) => {
+    setEditingId(site.id)
+    setForm({
+      ...site,
+      capacity: String(site.capacity),
+      latitude: String(site.latitude),
+      longitude: String(site.longitude),
+      hostIds: site.hosts?.map((h: any) => h.id) || [],
+    })
+    setTab(0)
+  }
 
-            {/* Location Fields */}
-            {['country', 'city', 'state', 'zip', 'address'].map((field) => (
-              <Grid key={field} item xs={12} sm={6}>
+  const handleDelete = async (id: number) => {
+    if (!confirm('Are you sure you want to delete this site?')) return
+    try {
+      await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/api/sites/${id}`)
+      fetchSites()
+    } catch (_) {
+      alert('Failed to delete site.')
+    }
+  }
+
+  return (
+    <Container sx={{ mt: 6, mb: 6 }}>
+      <Tabs value={tab} onChange={(_, val) => setTab(val)} centered>
+        <Tab label={editingId ? 'Edit Site' : 'Add Site'} />
+        <Tab label="Site List" />
+      </Tabs>
+
+      {tab === 0 && (
+        <Paper sx={{ p: 4, mt: 3 }}>
+          <form onSubmit={handleSubmit}>
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={6}>
                 <TextField
                   fullWidth
-                  name={field}
-                  label={field[0].toUpperCase() + field.slice(1)}
-                  value={(form as any)[field]}
-                  onChange={handleChange}
+                  name="name"
+                  label="Site Name"
+                  value={form.name}
+                  onChange={handleTextChange}
                   required
                 />
               </Grid>
-            ))}
-
-            {/* Capacity + Lat/Lng */}
-            <Grid item xs={12} sm={4}>
-              <TextField
-                fullWidth
-                name="capacity"
-                label="Capacity"
-                type="number"
-                value={form.capacity}
-                onChange={handleChange}
-                required
-              />
-            </Grid>
-            <Grid item xs={12} sm={4}>
-              <TextField
-                fullWidth
-                name="latitude"
-                label="Latitude"
-                type="number"
-                value={form.latitude}
-                onChange={handleChange}
-                required
-              />
-            </Grid>
-            <Grid item xs={12} sm={4}>
-              <TextField
-                fullWidth
-                name="longitude"
-                label="Longitude"
-                type="number"
-                value={form.longitude}
-                onChange={handleChange}
-                required
-              />
-            </Grid>
-
-            {/* Enums */}
-            {(Object.keys(enumOptions) as (keyof typeof enumOptions)[]).map(
-              (field) => (
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  name="website"
+                  label="Website"
+                  value={form.website}
+                  onChange={handleTextChange}
+                />
+              </Grid>
+              {['country', 'city', 'state', 'zip', 'address'].map((field) => (
                 <Grid key={field} item xs={12} sm={6}>
-                  <FormControl fullWidth required>
-                    <InputLabel>
-                      {field[0].toUpperCase() + field.slice(1)}
-                    </InputLabel>
-                    <Select
-                      name={field}
-                      value={(form as any)[field]}
-                      label={field}
-                      onChange={handleChange}
-                    >
-                      {enumOptions[field].map((option) => (
-                        <MenuItem key={option} value={option}>
-                          {option.replace(/_/g, ' ')}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
+                  <TextField
+                    fullWidth
+                    name={field}
+                    label={field[0].toUpperCase() + field.slice(1)}
+                    value={form[field as keyof FormFields]}
+                    onChange={handleTextChange}
+                    required
+                  />
                 </Grid>
-              )
-            )}
-
-            {/* Hosts */}
-            <Grid item xs={12}>
-              <FormControl fullWidth required>
-                <InputLabel>Hosts</InputLabel>
-                <Select
-                  multiple
-                  value={form.hostIds}
-                  onChange={handleMultiSelect}
-                  input={<OutlinedInput label="Hosts" />}
-                  renderValue={(selected) =>
-                    (selected as number[])
-                      .map(
-                        (id) =>
-                          hosts.find((host) => host.id === id)?.email ||
-                          `User ${id}`
-                      )
-                      .join(', ')
-                  }
-                >
-                  {hosts.map((host) => (
-                    <MenuItem key={host.id} value={host.id}>
-                      <Checkbox checked={form.hostIds.includes(host.id)} />
-                      <ListItemText primary={host.email} />
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Grid>
-
-            {/* Submit */}
-            <Grid item xs={12}>
-              <Button
-                type="submit"
-                variant="contained"
-                fullWidth
-                disabled={loading}
-              >
-                {loading ? 'Saving...' : 'Create Site'}
-              </Button>
-              {message && (
-                <Typography sx={{ mt: 2 }} textAlign="center" color="primary">
-                  {message}
-                </Typography>
+              ))}
+              {['capacity', 'latitude', 'longitude'].map((field) => (
+                <Grid key={field} item xs={12} sm={4}>
+                  <TextField
+                    fullWidth
+                    name={field}
+                    label={field[0].toUpperCase() + field.slice(1)}
+                    value={form[field as keyof FormFields]}
+                    onChange={handleTextChange}
+                    required
+                    type="number"
+                  />
+                </Grid>
+              ))}
+              {(Object.keys(enumOptions) as (keyof typeof enumOptions)[]).map(
+                (field) => (
+                  <Grid key={field} item xs={12} sm={6}>
+                    <FormControl fullWidth required>
+                      <InputLabel>{field}</InputLabel>
+                      <Select
+                        name={field}
+                        value={form[field as keyof FormFields] as string}
+                        label={field}
+                        onChange={handleSelectChange}
+                      >
+                        {enumOptions[field].map((option) => (
+                          <MenuItem key={option} value={option}>
+                            {option.replace(/_/g, ' ')}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  </Grid>
+                )
               )}
+              <Grid item xs={12}>
+                <FormControl fullWidth required>
+                  <InputLabel>Hosts</InputLabel>
+                  <Select
+                    multiple
+                    name="hostIds"
+                    value={form.hostIds.map(String)}
+                    onChange={handleMultiSelect}
+                    input={<OutlinedInput label="Hosts" />}
+                    renderValue={(selected) =>
+                      selected
+                        .map(
+                          (id) =>
+                            hosts.find((h) => h.id === Number(id))?.email ||
+                            `User ${id}`
+                        )
+                        .join(', ')
+                    }
+                  >
+                    {hosts.map((host) => (
+                      <MenuItem key={host.id} value={String(host.id)}>
+                        <Checkbox checked={form.hostIds.includes(host.id)} />
+                        <ListItemText primary={host.email} />
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item xs={12}>
+                <Button
+                  type="submit"
+                  fullWidth
+                  variant="contained"
+                  disabled={loading}
+                >
+                  {loading ? (
+                    <CircularProgress size={24} />
+                  ) : editingId ? (
+                    'Update Site'
+                  ) : (
+                    'Create Site'
+                  )}
+                </Button>
+                {message && (
+                  <Typography textAlign="center" sx={{ mt: 2 }} color="primary">
+                    {message}
+                  </Typography>
+                )}
+              </Grid>
             </Grid>
-          </Grid>
-        </form>
-      </Paper>
+          </form>
+        </Paper>
+      )}
+
+      {tab === 1 && (
+        <Box sx={{ mt: 4 }}>
+          {sites.map((site) => (
+            <Paper key={site.id} sx={{ p: 2, mb: 2 }}>
+              <Typography variant="h6">{site.name}</Typography>
+              <Typography>
+                {site.city}, {site.state}
+              </Typography>
+              <Box sx={{ mt: 1 }}>
+                <IconButton onClick={() => handleEdit(site)}>
+                  <Edit />
+                </IconButton>
+                <IconButton onClick={() => handleDelete(site.id)}>
+                  <Delete />
+                </IconButton>
+              </Box>
+            </Paper>
+          ))}
+        </Box>
+      )}
     </Container>
   )
 }
