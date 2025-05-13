@@ -14,7 +14,7 @@ export default function HighSchoolSitesPage() {
           </Typography>
           <Typography variant="body1" sx={{ mt: 2 }}>
             High school sites host only their own students unless{' '}
-            <strong>"open to all students"</strong> is specified.
+            <strong>&quot;open to all students&quot;</strong> is specified.
           </Typography>
         </Box>
       </Container>

@@ -35,7 +35,8 @@ const CompetitionsAccordion = () => {
               {competition.updates.map((update, index) => (
                 <li key={index}>
                   <Typography variant="body2">
-                    <strong>{update.date}:</strong> {update.text}
+                    <strong>{update.date}:</strong>{' '}
+                    {update.text.replace(/'/g, '&apos;')}
                   </Typography>
                 </li>
               ))}
@@ -65,8 +66,8 @@ const CompetitionsAccordion = () => {
           Contact
         </Typography>
         <Typography variant="body1">
-          We're looking for new sites and problem contributors. Please contact
-          us at{' '}
+          We&apos;re looking for new sites and problem contributors. Please
+          contact us at{' '}
           <Link href="mailto:naclo22org@googlegroups.com">
             naclo22org@googlegroups.com
           </Link>
