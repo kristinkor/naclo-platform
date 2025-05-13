@@ -1,0 +1,110 @@
+[
+  {
+    "year": 2023,
+    "slug": "naclo2023",
+    "updates": [
+      {
+        "date": "2023-04-10",
+        "text": "Grading for the 2023 Invitational Round has concluded. Participant scores, best problem solution awards, and the USA and Anglophone Canada team assignments for the 2023 IOL can be accessed [here](https://naclo.org/2023/NACLO-2023-Invitational-Round-Results.pdf). The Open Round and Invitational Round problems and solutions will be posted shortly. Thank you for participating!"
+      },
+      {
+        "date": "2023-02-25",
+        "text": "Grading for the 2023 Open Round has concluded and your score is available in your student account. The list of students who have qualified for the Invitational Round has been released. You can access it [here](https://naclo.org/2023/topscores-2023-r1.txt). Please contact nacloinquiries@googlegroups.com if your score is missing."
+      },
+      {
+        "date": "2023-02-16",
+        "text": "The following [booklets](https://www.naclo.org/2023/booklets2023.txt) have been uploaded to the system for grading. If you don't find your submission here, please contact your site host immediately."
+      },
+      {
+        "date": "2023-01-26",
+        "text": "The 2023 NACLO Open Round took place on January 26, 2023. Registration is now closed for this academic year. We thank all hosts for hosting and all participants for joining this year's contest. The jury will be grading over the next month and plans to post the Open Round scores by March 1, and participants will see their scores by logging into their individual accounts."
+      },
+      {
+        "date": "2022-09-21",
+        "text": "The [handbook](https://www.naclo.org/resources/handbook/) for 2023 is now available."
+      },
+      {
+        "date": "2022-09-20",
+        "text": "Registration for the 2023 Open Contest is now open."
+      },
+      {
+        "date": "2022-09-18",
+        "text": "NACLO 2023 will be on January 26, 2023 (Open Round) and March 16, 2023 (Invitational Round)."
+      }
+    ],
+    "donate": {
+      "text": "You can help support NACLO either by mailing a check or giving online. For more information on both, please see our [donations page](donate.php). We thank you for your support!"
+    },
+    "contact": {
+      "text": "We're looking for new sites and problem contributors. Please contact us at naclo22org@googlegroups.com."
+    }
+  },
+  {
+    "year": 2022,
+    "slug": "naclo2022",
+    "updates": [
+      {
+        "date": "2022-09-21",
+        "text": "The [handbook](https://www.naclo.org/resources/handbook/) for 2023 is now available."
+      },
+      {
+        "date": "2022-09-20",
+        "text": "Registration for the 2023 Open Contest is now open."
+      },
+      {
+        "date": "2022-09-18",
+        "text": "NACLO 2023 will be on January 26, 2023 (Open Round) and March 16, 2023 (Invitational Round)."
+      },
+      {
+        "date": "2022-09-10",
+        "text": "Registration for the 2023 Open Contest will start in late September, 2022."
+      },
+      {
+        "date": "2022-08-13",
+        "text": "[Press Release](https://naclo.org/2022/NACLO2022PRESSRELEASE-IOL.pdf) about the performance of the NACLO teams at the 2022 IOL."
+      },
+      {
+        "date": "2022-06-04",
+        "text": "The solutions from both rounds have been [released](https://www.naclo.org/practice.php)."
+      },
+      {
+        "date": "2022-04-28",
+        "text": "The problem booklets from both rounds of the 2022 contest have been [released](https://www.naclo.org/practice.php)."
+      },
+      {
+        "date": "2022-04-20",
+        "text": "Grading for the 2022 Invitational Round has concluded. The results and team assignments can be accessed [here](https://naclo.org/2022/NACLO%202022%20R2%20Results.pdf). The Open Round and Invitational Round problems and solutions will be posted shortly. Thank you for participating!"
+      },
+      {
+        "date": "2022-03-07",
+        "text": "Grading for the 2022 Open Round has concluded and your score is available in your student account. The list of students who have qualified for the Invitational Round has been released. You can access it [here](https://naclo.org/2022/topscores-2022-r1.txt). Please contact naclo22org@googlegroups.com if your score is missing."
+      },
+      {
+        "date": "2022-03-07",
+        "text": "The results from the Open Round will be posted to the student accounts later today, March 7."
+      },
+      {
+        "date": "2022-03-05",
+        "text": "The jury is finalizing the Open Round grading and results will be announced in the next few days. In the meantime, here is the list of [submitted booklets](https://naclo.org/2022/booklets-2022-r1.txt). If you don't see your ID/registration number in this list, please contact naclo22org@googlegroups.com as soon as possible."
+      },
+      {
+        "date": "2022-02-09",
+        "text": "The 2022 Open Contest is over."
+      },
+      {
+        "date": "2021-09-26",
+        "text": "[Registration](https://naclo.org/main.php) for the 2022 Open Contest has started."
+      },
+      {
+        "date": "2021-09-19",
+        "text": "The handbook for 2022 is now [available](https://www.naclo.org/resources/handbook/)."
+      }
+    ],
+    "donate": {
+      "text": "You can help support NACLO either by [mailing a check](donate.php) or [giving online](https://securelb.imodules.com/s/1410/giving/form.aspx?sid=1410&gid=1&pgid=382&cid=990&appealcode=A3717&dids=409). For more information on both, please see our [donations page](donate.php). We thank you for your support!"
+    },
+    "contact": {
+      "text": "We're looking for new sites and problem contributors. Please contact us at naclo22org@googlegroups.com."
+    }
+  }
+]

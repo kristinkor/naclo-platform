@@ -4,9 +4,8 @@ export default function Document() {
   return (
     <Html lang="en">
       <Head>
-        {/* Meta Tags */}
+        {/* ✅ Meta Tags */}
         <meta charSet="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta
           name="description"
           content="NACLO is a contest where middle and high school students solve linguistic puzzles, learning about language diversity and consistency while exercising logic skills."
@@ -23,11 +22,7 @@ export default function Document() {
         <meta name="language" content="en" />
         <meta httpEquiv="X-UA-Compatible" content="ie=edge" />
 
-        <title>
-          NACLO - North American Computational Linguistics Open Competition
-        </title>
-
-        {/* Favicon */}
+        {/* ✅ Favicons */}
         <link rel="icon" href="/favicon.ico" />
         <link
           rel="apple-touch-icon"
@@ -48,7 +43,7 @@ export default function Document() {
         />
         <link rel="manifest" href="/assets/icons/site.webmanifest" />
 
-        {/* Google Fonts */}
+        {/* ✅ Google Fonts */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
           rel="preconnect"

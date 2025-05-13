@@ -46,9 +46,10 @@ export default function Navbar() {
             className="logo"
             src="/naclo_orange.png"
             alt="NACLO Logo"
-            width={180}
-            height={150}
-            layout="responsive"
+            width={240}
+            height={180}
+            priority
+            style={{ height: 'auto' }}
           />
         </Link>
 
