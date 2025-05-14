@@ -3,10 +3,9 @@
 
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
 import L from 'leaflet'
-import { useEffect } from 'react'
 
 // Fix default icon issue in Leaflet
-delete (L.Icon.Default.prototype as any)._getIconUrl
+delete (L.Icon.Default.prototype as unknown)._getIconUrl
 L.Icon.Default.mergeOptions({
   iconRetinaUrl:
     'https://unpkg.com/leaflet@1.9.3/dist/images/marker-icon-2x.png',
@@ -14,7 +13,17 @@ L.Icon.Default.mergeOptions({
   shadowUrl: 'https://unpkg.com/leaflet@1.9.3/dist/images/marker-shadow.png',
 })
 
-const sites = [
+interface Site {
+  id: number
+  name: string
+  city: string
+  state: string
+  latitude: number
+  longitude: number
+  website?: string
+}
+
+const sites: Site[] = [
   {
     id: 1,
     name: 'Brandeis University',
@@ -209,16 +218,18 @@ export default function MapWithSites() {
         attribution='&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
-      {sites.map((site, index) => (
-        <Marker key={index} position={[site.latitude, site.longitude]}>
+      {sites.map((site) => (
+        <Marker key={site.id} position={[site.latitude, site.longitude]}>
           <Popup>
             <strong>{site.name}</strong>
             <br />
             {site.city}, {site.state}
             <br />
-            <a href={site.website} target="_blank" rel="noopener noreferrer">
-              Visit Site
-            </a>
+            {site.website && (
+              <a href={site.website} target="_blank" rel="noopener noreferrer">
+                Visit Site
+              </a>
+            )}
           </Popup>
         </Marker>
       ))}
