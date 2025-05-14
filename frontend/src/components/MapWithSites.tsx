@@ -3,14 +3,15 @@
 
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
 import L from 'leaflet'
+import 'leaflet/dist/leaflet.css'
 
-// Типизация с расширением прототипа
-interface IconWithGetIconUrl extends L.IconDefault {
+const iconProto = L.Icon.Default.prototype as unknown as {
   _getIconUrl?: () => string
 }
+if ('_getIconUrl' in iconProto) {
+  delete iconProto._getIconUrl
+}
 
-// Удаление устаревшего метода и установка корректных иконок
-delete (L.Icon.Default.prototype as IconWithGetIconUrl)._getIconUrl
 L.Icon.Default.mergeOptions({
   iconRetinaUrl:
     'https://unpkg.com/leaflet@1.9.3/dist/images/marker-icon-2x.png',
@@ -18,7 +19,17 @@ L.Icon.Default.mergeOptions({
   shadowUrl: 'https://unpkg.com/leaflet@1.9.3/dist/images/marker-shadow.png',
 })
 
-const sites = [
+type Site = {
+  id: number
+  name: string
+  city: string
+  state: string
+  latitude: number
+  longitude: number
+  website: string
+}
+
+const sites: Site[] = [
   {
     id: 1,
     name: 'Brandeis University',
@@ -46,77 +57,14 @@ const sites = [
     longitude: -79.9436,
     website: 'https://www.lti.cs.cmu.edu/naclo-cmu',
   },
-  {
-    id: 4,
-    name: 'College of William and Mary',
-    city: 'Williamsburg',
-    state: 'VA',
-    latitude: 37.2707,
-    longitude: -76.7075,
-    website: 'http://www.wm.edu/as/linguistics/naclo/index.php',
-  },
-  {
-    id: 5,
-    name: 'Columbia University',
-    city: 'New York',
-    state: 'NY',
-    latitude: 40.8075,
-    longitude: -73.9626,
-    website: 'http://www.cs.columbia.edu/~bauer/NACLO2023/',
-  },
-  {
-    id: 6,
-    name: 'Cornell University',
-    city: 'Ithaca',
-    state: 'NY',
-    latitude: 42.4534,
-    longitude: -76.4735,
-    website: 'https://blogs.cornell.edu/linguisticsoutreach/',
-  },
-  {
-    id: 7,
-    name: 'Dalhousie University',
-    city: 'Halifax',
-    state: 'NS',
-    latitude: 44.6366,
-    longitude: -63.5918,
-    website: 'http://naclo.ca',
-  },
-  {
-    id: 8,
-    name: 'Dartmouth College',
-    city: 'Hanover',
-    state: 'NH',
-    latitude: 43.7044,
-    longitude: -72.2887,
-    website: 'http://www.cs.dartmouth.edu/~naclo/',
-  },
-  {
-    id: 9,
-    name: 'Georgetown University',
-    city: 'Washington',
-    state: 'DC',
-    latitude: 38.9076,
-    longitude: -77.0723,
-    website: 'http://gucl.georgetown.edu/naclo.html',
-  },
-  {
-    id: 10,
-    name: 'Johns Hopkins University',
-    city: 'Baltimore',
-    state: 'MD',
-    latitude: 39.3289,
-    longitude: -76.6205,
-    website: 'http://naclo.clsp.jhu.edu',
-  },
 ]
 
 export default function MapWithSites() {
   return (
     <MapContainer
-      center={[39.8283, -98.5795]} // Центр карты — середина США
+      center={[39.8283, -98.5795]}
       zoom={4}
-      scrollWheelZoom={false} // Отключен зум на скролл
+      scrollWheelZoom={false}
       style={{ height: '500px', width: '100%' }}
     >
       <TileLayer
@@ -124,7 +72,10 @@ export default function MapWithSites() {
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
       {sites.map((site) => (
-        <Marker key={site.id} position={[site.latitude, site.longitude]}>
+        <Marker
+          key={site.id}
+          position={[site.latitude, site.longitude] as [number, number]}
+        >
           <Popup>
             <strong>{site.name}</strong>
             <br />
