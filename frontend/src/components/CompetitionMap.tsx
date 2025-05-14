@@ -143,7 +143,7 @@ const competitionSites: CompetitionSite[] = [
 export default function CompetitionMap(): JSX.Element {
   return (
     <MapContainer
-      center={[37.8, -96.0]}
+      center={[37.8, -96.0] as [number, number]}
       zoom={4}
       scrollWheelZoom={false}
       style={{ height: '600px', width: '100%' }}
