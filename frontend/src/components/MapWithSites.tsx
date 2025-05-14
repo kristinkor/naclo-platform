@@ -4,8 +4,13 @@
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
 import L from 'leaflet'
 
-// Fix Leaflet's missing icon issue
-delete (L.Icon.Default.prototype as any)._getIconUrl
+// Типизация с расширением прототипа
+interface IconWithGetIconUrl extends L.IconDefault {
+  _getIconUrl?: () => string
+}
+
+// Удаление устаревшего метода и установка корректных иконок
+delete (L.Icon.Default.prototype as IconWithGetIconUrl)._getIconUrl
 L.Icon.Default.mergeOptions({
   iconRetinaUrl:
     'https://unpkg.com/leaflet@1.9.3/dist/images/marker-icon-2x.png',
@@ -13,17 +18,7 @@ L.Icon.Default.mergeOptions({
   shadowUrl: 'https://unpkg.com/leaflet@1.9.3/dist/images/marker-shadow.png',
 })
 
-interface Site {
-  id: number
-  name: string
-  city: string
-  state: string
-  latitude: number
-  longitude: number
-  website?: string
-}
-
-const sites: Site[] = [
+const sites = [
   {
     id: 1,
     name: 'Brandeis University',
@@ -114,104 +109,14 @@ const sites: Site[] = [
     longitude: -76.6205,
     website: 'http://naclo.clsp.jhu.edu',
   },
-  {
-    id: 11,
-    name: 'Massachusetts Institute of Technology',
-    city: 'Cambridge',
-    state: 'MA',
-    latitude: 42.3601,
-    longitude: -71.0942,
-    website: 'http://naclo.mit.edu',
-  },
-  {
-    id: 12,
-    name: 'Middle Tennessee State University',
-    city: 'Murfreesboro',
-    state: 'TN',
-    latitude: 35.8456,
-    longitude: -86.3903,
-    website: 'http://www.mtsu.edu/lo/naclo.php',
-  },
-  {
-    id: 13,
-    name: 'Minnesota State University Mankato',
-    city: 'Mankato',
-    state: 'MN',
-    latitude: 44.1468,
-    longitude: -94.0001,
-    website: 'https://cset.mnsu.edu/naclo',
-  },
-  {
-    id: 14,
-    name: 'Ohio State University',
-    city: 'Columbus',
-    state: 'OH',
-    latitude: 40.0076,
-    longitude: -83.0309,
-    website: 'https://linguistics.osu.edu/naclo',
-  },
-  {
-    id: 15,
-    name: 'Princeton University',
-    city: 'Princeton',
-    state: 'NJ',
-    latitude: 40.3431,
-    longitude: -74.6551,
-    website: 'https://sites.google.com/princeton.edu/nacloprinceton/home',
-  },
-  {
-    id: 16,
-    name: 'Simon Fraser University',
-    city: 'Burnaby',
-    state: 'BC',
-    latitude: 49.2781,
-    longitude: -122.9199,
-    website: 'http://www.sfu.ca/linguistics/undergraduate/naclo-at-sfu.html',
-  },
-  {
-    id: 17,
-    name: 'Stanford University',
-    city: 'Stanford',
-    state: 'CA',
-    latitude: 37.4275,
-    longitude: -122.1697,
-    website: 'https://linguistics.stanford.edu/news-events/naclo',
-  },
-  {
-    id: 18,
-    name: 'Stony Brook University',
-    city: 'Stony Brook',
-    state: 'NY',
-    latitude: 40.9124,
-    longitude: -73.1232,
-    website: 'https://calendar.stonybrook.edu/site/iacs/event/naclo-2023/',
-  },
-  {
-    id: 19,
-    name: 'Union College',
-    city: 'Schenectady',
-    state: 'NY',
-    latitude: 42.8206,
-    longitude: -73.9285,
-    website: 'http://cs.union.edu/~striegnk/naclo',
-  },
-  {
-    id: 20,
-    name: 'University of Wisconsin, Milwaukee',
-    city: 'Milwaukee',
-    state: 'WI',
-    latitude: 43.0799,
-    longitude: -87.8816,
-    website: 'http://HSlinguistsMKE.wordpress.com',
-  },
 ]
 
 export default function MapWithSites() {
   return (
     <MapContainer
-      center={[39.8283, -98.5795]}
+      center={[39.8283, -98.5795]} // Центр карты — середина США
       zoom={4}
-      scrollWheelZoom={false}
+      scrollWheelZoom={false} // Отключен зум на скролл
       style={{ height: '500px', width: '100%' }}
     >
       <TileLayer
@@ -225,11 +130,9 @@ export default function MapWithSites() {
             <br />
             {site.city}, {site.state}
             <br />
-            {site.website && (
-              <a href={site.website} target="_blank" rel="noopener noreferrer">
-                Visit Site
-              </a>
-            )}
+            <a href={site.website} target="_blank" rel="noopener noreferrer">
+              Visit Site
+            </a>
           </Popup>
         </Marker>
       ))}
