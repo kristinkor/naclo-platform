@@ -281,10 +281,7 @@ export default function UsersAdminPage() {
       const payload = {
         ...newUser,
         confirmPassword: newUser.password,
-        grade:
-          typeof newUser.grade === 'number'
-            ? newUser.grade
-            : parseInt(newUser.grade as any, 10) || 0,
+        grade: newUser.grade ?? 0,
         languages: Array.isArray(newUser.languages)
           ? (newUser.languages as string[]).join(',')
           : newUser.languages,
