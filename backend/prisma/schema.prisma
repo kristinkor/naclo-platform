@@ -74,10 +74,10 @@ longitude Float?
 // 🔘 ENUMS
 
 enum UserRole {
-  STUDENT
-  HOST
-  ORGANIZER
   WEBMASTER
+  HOST
+  STUDENT
+  ORGANIZER
 }
 
 enum InstitutionType {

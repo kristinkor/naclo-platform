@@ -16,7 +16,9 @@ main {
 a {
   transition: all 0.15s;
 }
-
+.brokenSelect .css-113d811-MuiFormLabel-root-MuiInputLabel-root {
+  background-color: white;
+}
 .banner h1 {
   font-size: 4rem;
   color: white;

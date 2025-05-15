@@ -202,17 +202,6 @@ export default function Navbar() {
           </MenuItem>
         </Menu>
 
-        {/* Admin only link */}
-        {user?.roleId === 1 && (
-          <Button
-            component={Link}
-            href="/admin/dashboard"
-            sx={{ color: '#7125ce', fontWeight: 'bold', ml: 'auto' }}
-          >
-            Admin Panel
-          </Button>
-        )}
-
         {/* Auth buttons */}
         <div style={{ marginLeft: 'auto' }}>
           {user ? (
@@ -224,7 +213,15 @@ export default function Navbar() {
               >
                 Profile
               </Button>
-              <Button onClick={handleLogout} sx={{ fontWeight: 'bold' }}>
+              <Button
+                component="a"
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault()
+                  handleLogout()
+                }}
+                sx={{ fontWeight: 'bold' }}
+              >
                 Logout
               </Button>
             </>

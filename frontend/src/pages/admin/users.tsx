@@ -1,5 +1,6 @@
 // src/pages/admin/users.tsx
 import { useEffect, useState } from 'react'
+import { useAuth } from '../../context/AuthContext'
 import {
   Container,
   Typography,
@@ -24,28 +25,12 @@ import {
 import { useRouter } from 'next/router'
 import { api, setAuthToken } from '../../utils/api'
 
-type StudentData = {
-  grade?: number
-  city?: string
-  state?: string
-  school?: string
-}
-
-type User = {
-  id: number
-  firstName: string
-  lastName: string
-  email: string
-  emailConfirmed: boolean
-  roleId: number
-  role: { name: string }
-  student?: StudentData
-}
-
 export default function UsersAdminPage() {
-  const [users, setUsers] = useState<User[]>([])
+  const { user, loading: authLoading } = useAuth()
+  const router = useRouter()
+  const [users, setUsers] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
-  const [editUser, setEditUser] = useState<User | null>(null)
+  const [editUser, setEditUser] = useState<any | null>(null)
   const [deleteUserId, setDeleteUserId] = useState<number | null>(null)
   const [openAdd, setOpenAdd] = useState(false)
   const [newUser, setNewUser] = useState({
@@ -54,30 +39,28 @@ export default function UsersAdminPage() {
     email: '',
     password: '',
     roleId: 3,
+    birthdate: '',
+    grade: '',
+    countryOfIOL: '',
+    state: '',
+    city: '',
+    school: '',
+    languages: '',
   })
+  const [formErrors, setFormErrors] = useState<any>({})
 
-  const router = useRouter()
+  useEffect(() => {
+    if (!authLoading && (!user || user.roleId !== 1)) {
+      router.push('/login')
+    }
+  }, [authLoading, user, router])
 
   useEffect(() => {
     const token = localStorage.getItem('token')
-    if (!token) {
-      router.push('/login')
-      return
-    }
-
+    if (!token) return
     setAuthToken(token)
-
-    api
-      .get('/users/me')
-      .then((res) => {
-        if (res.data.roleId !== 1) router.push('/')
-        else fetchUsers()
-      })
-      .catch(() => {
-        localStorage.removeItem('token')
-        router.push('/login')
-      })
-  }, [router])
+    fetchUsers()
+  }, [])
 
   const fetchUsers = async () => {
     try {
@@ -90,29 +73,28 @@ export default function UsersAdminPage() {
     }
   }
 
-  const handleEdit = (user: User) => {
-    setEditUser(user)
-  }
-
-  const handleSave = async () => {
-    if (!editUser) return
-    try {
-      await api.put(`/users/${editUser.id}`, editUser, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-      })
-      fetchUsers()
-      setEditUser(null)
-    } catch (err) {
-      console.error('Error updating user:', err)
+  const validateForm = () => {
+    const errors: any = {}
+    if (!newUser.firstName.trim()) errors.firstName = 'First name is required'
+    if (!newUser.lastName.trim()) errors.lastName = 'Last name is required'
+    if (!/\S+@\S+\.\S+/.test(newUser.email))
+      errors.email = 'Invalid email format'
+    if (newUser.password.length < 6)
+      errors.password = 'Password must be at least 6 characters'
+    if (newUser.roleId === 3) {
+      if (!newUser.birthdate) errors.birthdate = 'Birthdate is required'
+      if (!newUser.grade) errors.grade = 'Grade is required'
+      if (!newUser.countryOfIOL) errors.countryOfIOL = 'Country is required'
+      if (!newUser.state) errors.state = 'State is required'
     }
+    setFormErrors(errors)
+    return Object.keys(errors).length === 0
   }
 
   const handleAdd = async () => {
+    if (!validateForm()) return
     try {
-      const payload = {
-        ...newUser,
-        confirmPassword: newUser.password,
-      }
+      const payload = { ...newUser, confirmPassword: newUser.password }
       const res = await api.post('/auth/register', payload)
       setUsers((prev) => [...prev, res.data.user])
       setOpenAdd(false)
@@ -122,12 +104,73 @@ export default function UsersAdminPage() {
         email: '',
         password: '',
         roleId: 3,
+        birthdate: '',
+        grade: '',
+        countryOfIOL: '',
+        state: '',
+        city: '',
+        school: '',
+        languages: '',
       })
-    } catch (error) {
-      console.error('Error adding user:', error)
+      setFormErrors({})
+    } catch (error: any) {
+      console.error('Error adding user:', error.response?.data || error.message)
+      alert(
+        error.response?.data?.message || 'Failed to add user. Try again later.'
+      )
     }
   }
 
+  const handleDelete = async () => {
+    if (!deleteUserId) return
+    const token = localStorage.getItem('token')
+    console.log(
+      '🔗 Final delete URL:',
+      api.defaults.baseURL + `/users/${deleteUserId}`
+    )
+
+    console.log('🧾 Token from localStorage:', token)
+    setAuthToken(token)
+    try {
+      await api.delete(`/users/${deleteUserId}`)
+      setUsers((prev) => prev.filter((u) => u.id !== deleteUserId))
+      setDeleteUserId(null)
+    } catch (err) {
+      console.error('Error deleting user:', err)
+      alert('Failed to delete user.')
+    }
+  }
+  const handleEdit = (user: any) => {
+    setEditUser({
+      ...user,
+      student: user.student || {
+        grade: '',
+        city: '',
+        state: '',
+        school: '',
+      },
+    })
+  }
+  const handleSave = async () => {
+    if (!editUser) return
+
+    try {
+      await api.put(`/users/${editUser.id}`, {
+        firstName: editUser.firstName,
+        lastName: editUser.lastName,
+        student: {
+          grade: editUser.student?.grade,
+          city: editUser.student?.city,
+        },
+      })
+
+      await fetchUsers()
+      setEditUser(null)
+    } catch (err) {
+      console.error('Error updating user:', err)
+      alert('Failed to update user.')
+    }
+  }
   const handleResendConfirmation = async (email: string) => {
     try {
       await api.post('/auth/resend-confirmation', { email })
@@ -138,20 +181,13 @@ export default function UsersAdminPage() {
     }
   }
 
-  if (loading) return <Typography>Loading...</Typography>
+  if (loading || authLoading) return <Typography>Loading...</Typography>
 
   return (
     <Container maxWidth="lg" sx={{ mt: 10, mb: 10 }}>
       <Typography variant="h4" gutterBottom>
         Manage Users
       </Typography>
-      <Button
-        variant="contained"
-        sx={{ my: 2 }}
-        onClick={() => setOpenAdd(true)}
-      >
-        Add User
-      </Button>
       <TableContainer component={Paper} sx={{ mt: 4 }}>
         <Table>
           <TableHead>
@@ -214,12 +250,17 @@ export default function UsersAdminPage() {
           </TableBody>
         </Table>
       </TableContainer>
-
       {/* Edit dialog */}
       <Dialog open={!!editUser} onClose={() => setEditUser(null)}>
         <DialogTitle>Edit User</DialogTitle>
         <DialogContent
-          sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 2,
+            mt: 1,
+            width: 400,
+          }}
         >
           <TextField
             label="First Name"
@@ -279,42 +320,35 @@ export default function UsersAdminPage() {
           </Button>
         </DialogActions>
       </Dialog>
-      <Dialog
-        open={deleteUserId !== null}
-        onClose={() => setDeleteUserId(null)}
-      >
-        <DialogTitle>Confirm Deletion</DialogTitle>
+      <Dialog open={!!deleteUserId} onClose={() => setDeleteUserId(null)}>
+        <DialogTitle>Delete User</DialogTitle>
         <DialogContent>
-          <Typography>Do you really want to delete this user?</Typography>
+          <Typography>Are you sure you want to delete this user?</Typography>
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setDeleteUserId(null)}>Cancel</Button>
-          <Button
-            onClick={async () => {
-              try {
-                await api.delete(`/users/${deleteUserId}`, {
-                  headers: {
-                    Authorization: `Bearer ${localStorage.getItem('token')}`,
-                  },
-                })
-                setUsers((prev) => prev.filter((u) => u.id !== deleteUserId))
-              } catch (err) {
-                console.error('Error deleting user:', err)
-              } finally {
-                setDeleteUserId(null)
-              }
-            }}
-            variant="contained"
-            color="error"
-          >
+          <Button color="error" variant="contained" onClick={handleDelete}>
             Delete
           </Button>
         </DialogActions>
       </Dialog>
+
+      <Button
+        variant="contained"
+        sx={{ my: 2 }}
+        onClick={() => setOpenAdd(true)}
+      >
+        Add User
+      </Button>
       <Dialog open={openAdd} onClose={() => setOpenAdd(false)}>
         <DialogTitle>Add New User</DialogTitle>
         <DialogContent
-          sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 2,
+            minWidth: 400,
+          }}
         >
           <TextField
             label="First Name"
@@ -322,6 +356,8 @@ export default function UsersAdminPage() {
             onChange={(e) =>
               setNewUser({ ...newUser, firstName: e.target.value })
             }
+            error={!!formErrors.firstName}
+            helperText={formErrors.firstName}
             fullWidth
           />
           <TextField
@@ -330,13 +366,16 @@ export default function UsersAdminPage() {
             onChange={(e) =>
               setNewUser({ ...newUser, lastName: e.target.value })
             }
+            error={!!formErrors.lastName}
+            helperText={formErrors.lastName}
             fullWidth
           />
           <TextField
             label="Email"
-            type="email"
             value={newUser.email}
             onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
+            error={!!formErrors.email}
+            helperText={formErrors.email}
             fullWidth
           />
           <TextField
@@ -346,19 +385,21 @@ export default function UsersAdminPage() {
             onChange={(e) =>
               setNewUser({ ...newUser, password: e.target.value })
             }
+            error={!!formErrors.password}
+            helperText={formErrors.password}
             fullWidth
           />
           <FormControl fullWidth>
             <InputLabel>Role</InputLabel>
             <Select
               value={newUser.roleId}
+              label="Role"
               onChange={(e) =>
                 setNewUser({
                   ...newUser,
                   roleId: parseInt(e.target.value as string),
                 })
               }
-              label="Role"
             >
               <MenuItem value={1}>Webmaster</MenuItem>
               <MenuItem value={2}>Organizer</MenuItem>
@@ -366,6 +407,70 @@ export default function UsersAdminPage() {
               <MenuItem value={4}>Host</MenuItem>
             </Select>
           </FormControl>
+
+          {newUser.roleId === 3 && (
+            <>
+              <TextField
+                label="Birthdate"
+                type="date"
+                InputLabelProps={{ shrink: true }}
+                value={newUser.birthdate}
+                onChange={(e) =>
+                  setNewUser({ ...newUser, birthdate: e.target.value })
+                }
+                error={!!formErrors.birthdate}
+                helperText={formErrors.birthdate}
+              />
+              <TextField
+                label="Grade"
+                value={newUser.grade}
+                onChange={(e) =>
+                  setNewUser({ ...newUser, grade: e.target.value })
+                }
+                error={!!formErrors.grade}
+                helperText={formErrors.grade}
+              />
+              <TextField
+                label="Country of IOL"
+                value={newUser.countryOfIOL}
+                onChange={(e) =>
+                  setNewUser({ ...newUser, countryOfIOL: e.target.value })
+                }
+                error={!!formErrors.countryOfIOL}
+                helperText={formErrors.countryOfIOL}
+              />
+              <TextField
+                label="State"
+                value={newUser.state}
+                onChange={(e) =>
+                  setNewUser({ ...newUser, state: e.target.value })
+                }
+                error={!!formErrors.state}
+                helperText={formErrors.state}
+              />
+              <TextField
+                label="City"
+                value={newUser.city}
+                onChange={(e) =>
+                  setNewUser({ ...newUser, city: e.target.value })
+                }
+              />
+              <TextField
+                label="School"
+                value={newUser.school}
+                onChange={(e) =>
+                  setNewUser({ ...newUser, school: e.target.value })
+                }
+              />
+              <TextField
+                label="Languages"
+                value={newUser.languages}
+                onChange={(e) =>
+                  setNewUser({ ...newUser, languages: e.target.value })
+                }
+              />
+            </>
+          )}
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setOpenAdd(false)}>Cancel</Button>

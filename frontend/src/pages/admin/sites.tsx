@@ -55,8 +55,7 @@ type FormFields = {
   openness: string
   timezone: string
   website: string
-  latitude: string
-  longitude: string
+
   hostIds: number[]
 }
 
@@ -90,8 +89,7 @@ export default function AdminSitesPage() {
       openness: '',
       timezone: '',
       website: '',
-      latitude: '',
-      longitude: '',
+
       hostIds: [],
     }
   }
@@ -141,8 +139,6 @@ export default function AdminSitesPage() {
       const payload = {
         ...form,
         capacity: parseInt(form.capacity),
-        latitude: parseFloat(form.latitude),
-        longitude: parseFloat(form.longitude),
       }
 
       if (editingId) {
@@ -175,8 +171,7 @@ export default function AdminSitesPage() {
     setForm({
       ...site,
       capacity: String(site.capacity),
-      latitude: String(site.latitude),
-      longitude: String(site.longitude),
+
       hostIds: site.hosts?.map((h: Host) => h.id) || [],
     })
     setTab(0)

@@ -32,6 +32,121 @@ const languagesList = [
   'Japanese',
   'Portuguese',
   'Italian',
+  'Hindi',
+  'Korean',
+  'Vietnamese',
+  'Tagalog',
+  'Urdu',
+  'Hebrew',
+  'Greek',
+  'Turkish',
+  'Polish',
+  'Persian (Farsi)',
+  'Ukrainian',
+  'Thai',
+  'Bengali',
+  'Punjabi',
+  'Tamil',
+  'Telugu',
+  'Swahili',
+  'Romanian',
+  'Dutch',
+  'Serbian',
+  'Czech',
+  'Hungarian',
+  'Armenian',
+  'Amharic',
+  'Somali',
+  'Haitian Creole',
+  'Mandarin',
+  'Cantonese',
+  'Malay',
+  'Indonesian',
+  'Burmese',
+  'Khmer',
+  'Laotian',
+  'Nepali',
+  'Albanian',
+  'Bosnian',
+  'Mongolian',
+  'Pashto',
+  'Azerbaijani',
+  'Georgian',
+  'Zulu',
+  'Xhosa',
+  'Igbo',
+  'Yoruba',
+  'Tigrinya',
+  'Lingala',
+  'Hmong',
+]
+
+const US_STATES = [
+  { code: 'AL', name: 'Alabama' },
+  { code: 'AK', name: 'Alaska' },
+  { code: 'AZ', name: 'Arizona' },
+  { code: 'AR', name: 'Arkansas' },
+  { code: 'CA', name: 'California' },
+  { code: 'CO', name: 'Colorado' },
+  { code: 'CT', name: 'Connecticut' },
+  { code: 'DE', name: 'Delaware' },
+  { code: 'FL', name: 'Florida' },
+  { code: 'GA', name: 'Georgia' },
+  { code: 'HI', name: 'Hawaii' },
+  { code: 'ID', name: 'Idaho' },
+  { code: 'IL', name: 'Illinois' },
+  { code: 'IN', name: 'Indiana' },
+  { code: 'IA', name: 'Iowa' },
+  { code: 'KS', name: 'Kansas' },
+  { code: 'KY', name: 'Kentucky' },
+  { code: 'LA', name: 'Louisiana' },
+  { code: 'ME', name: 'Maine' },
+  { code: 'MD', name: 'Maryland' },
+  { code: 'MA', name: 'Massachusetts' },
+  { code: 'MI', name: 'Michigan' },
+  { code: 'MN', name: 'Minnesota' },
+  { code: 'MS', name: 'Mississippi' },
+  { code: 'MO', name: 'Missouri' },
+  { code: 'MT', name: 'Montana' },
+  { code: 'NE', name: 'Nebraska' },
+  { code: 'NV', name: 'Nevada' },
+  { code: 'NH', name: 'New Hampshire' },
+  { code: 'NJ', name: 'New Jersey' },
+  { code: 'NM', name: 'New Mexico' },
+  { code: 'NY', name: 'New York' },
+  { code: 'NC', name: 'North Carolina' },
+  { code: 'ND', name: 'North Dakota' },
+  { code: 'OH', name: 'Ohio' },
+  { code: 'OK', name: 'Oklahoma' },
+  { code: 'OR', name: 'Oregon' },
+  { code: 'PA', name: 'Pennsylvania' },
+  { code: 'RI', name: 'Rhode Island' },
+  { code: 'SC', name: 'South Carolina' },
+  { code: 'SD', name: 'South Dakota' },
+  { code: 'TN', name: 'Tennessee' },
+  { code: 'TX', name: 'Texas' },
+  { code: 'UT', name: 'Utah' },
+  { code: 'VT', name: 'Vermont' },
+  { code: 'VA', name: 'Virginia' },
+  { code: 'WA', name: 'Washington' },
+  { code: 'WV', name: 'West Virginia' },
+  { code: 'WI', name: 'Wisconsin' },
+  { code: 'WY', name: 'Wyoming' },
+]
+const CANADIAN_PROVINCES = [
+  { code: 'AB', name: 'Alberta' },
+  { code: 'BC', name: 'British Columbia' },
+  { code: 'MB', name: 'Manitoba' },
+  { code: 'NB', name: 'New Brunswick' },
+  { code: 'NL', name: 'Newfoundland and Labrador' },
+  { code: 'NS', name: 'Nova Scotia' },
+  { code: 'NT', name: 'Northwest Territories' },
+  { code: 'NU', name: 'Nunavut' },
+  { code: 'ON', name: 'Ontario' },
+  { code: 'PE', name: 'Prince Edward Island' },
+  { code: 'QC', name: 'Quebec' },
+  { code: 'SK', name: 'Saskatchewan' },
+  { code: 'YT', name: 'Yukon' },
 ]
 
 type Site = {
@@ -108,7 +223,12 @@ export default function Register() {
 
   const handleSelectChange = (e: SelectChangeEvent<string>) => {
     const { name, value } = e.target
-    setForm((prev) => ({ ...prev, [name]: value }))
+
+    setForm((prev) => ({
+      ...prev,
+      [name]: value,
+      ...(name === 'country' ? { state: '' } : {}),
+    }))
   }
 
   const handleLanguagesChange = (e: SelectChangeEvent<string[]>) => {
@@ -353,8 +473,12 @@ export default function Register() {
             </Typography>
           )}
         </FormControl>
-
-        <FormControl fullWidth margin="normal" error={!!errors.country}>
+        <FormControl
+          fullWidth
+          margin="normal"
+          error={!!errors.country}
+          className="brokenSelect"
+        >
           <InputLabel>Country</InputLabel>
           <Select
             name="country"
@@ -370,6 +494,35 @@ export default function Register() {
             </Typography>
           )}
         </FormControl>
+
+        <FormControl
+          fullWidth
+          margin="normal"
+          error={!!errors.state}
+          className="brokenSelect"
+        >
+          <InputLabel>State</InputLabel>
+          <Select
+            name="state"
+            value={form.state}
+            onChange={handleSelectChange}
+            disabled={!form.country}
+          >
+            {(form.country === 'USA' ? US_STATES : CANADIAN_PROVINCES).map(
+              ({ code, name }) => (
+                <MenuItem key={code} value={code}>
+                  {code} – {name}
+                </MenuItem>
+              )
+            )}
+          </Select>
+          {errors.state && (
+            <Typography variant="caption" color="error">
+              {errors.state}
+            </Typography>
+          )}
+        </FormControl>
+
         <TextField
           label="City"
           name="city"
@@ -380,16 +533,7 @@ export default function Register() {
           error={!!errors.city}
           helperText={errors.city}
         />
-        <TextField
-          label="State"
-          name="state"
-          value={form.state}
-          onChange={handleChange}
-          fullWidth
-          margin="normal"
-          error={!!errors.state}
-          helperText={errors.state}
-        />
+
         <TextField
           label="ZIP"
           name="zip"
@@ -423,7 +567,7 @@ export default function Register() {
           error={!!errors.grade}
           helperText={errors.grade}
         />
-        <FormControl fullWidth margin="normal">
+        <FormControl fullWidth margin="normal" className="brokenSelect">
           <InputLabel>Languages</InputLabel>
           <Select
             multiple
