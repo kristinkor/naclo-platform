@@ -33,7 +33,7 @@ export type NewUser = {
   confirmPassword?: string
   roleId: number
   birthdate?: string
-  grade?: string
+  grade?: number
   countryOfIOL?: string
   state?: string
   city?: string
@@ -42,7 +42,7 @@ export type NewUser = {
 }
 
 interface StudentProfile {
-  grade: string
+  grade: number
   city: string
   state: string
   school?: string
@@ -65,7 +65,7 @@ interface User {
 
 function ensureStudentFields(student?: StudentProfile): StudentProfile {
   return {
-    grade: student?.grade || '',
+    grade: typeof student?.grade === 'number' ? student.grade : 0,
     city: student?.city || '',
     state: student?.state || '',
     school: student?.school || '',
@@ -95,7 +95,7 @@ export default function UsersAdminPage() {
     confirmPassword: '',
     roleId: 3,
     birthdate: '',
-    grade: '',
+    grade: undefined,
     countryOfIOL: '',
     state: '',
     city: '',
@@ -159,7 +159,7 @@ export default function UsersAdminPage() {
         password: '',
         roleId: 3,
         birthdate: '',
-        grade: '',
+        grade: undefined,
         countryOfIOL: '',
         state: '',
         city: '',
@@ -358,20 +358,15 @@ export default function UsersAdminPage() {
           <TextField
             label="Grade"
             type="number"
-            value={editUser?.student?.grade || ''}
+            value={newUser.grade || ''}
             onChange={(e) =>
-              setEditUser((prev) => {
-                if (!prev) return null
-
-                return {
-                  ...prev,
-                  student: {
-                    ...ensureStudentFields(prev.student),
-                    grade: e.target.value, // or Number(e.target.value) if grade is number
-                  },
-                }
+              setNewUser({
+                ...newUser,
+                grade: parseInt(e.target.value, 10) || 0,
               })
             }
+            error={!!formErrors.grade}
+            helperText={formErrors.grade}
           />
 
           <TextField
@@ -490,9 +485,16 @@ export default function UsersAdminPage() {
               />
               <TextField
                 label="Grade"
-                value={newUser.grade}
+                type="number"
+                value={newUser.grade ?? ''} // Show empty string if undefined
                 onChange={(e) =>
-                  setNewUser({ ...newUser, grade: e.target.value })
+                  setNewUser({
+                    ...newUser,
+                    grade:
+                      e.target.value === ''
+                        ? undefined
+                        : parseInt(e.target.value, 10),
+                  })
                 }
                 error={!!formErrors.grade}
                 helperText={formErrors.grade}
