@@ -25,19 +25,74 @@ import {
 import { useRouter } from 'next/router'
 import { api, setAuthToken } from '../../utils/api'
 
+export type NewUser = {
+  firstName: string
+  lastName: string
+  email: string
+  password: string
+  confirmPassword?: string
+  roleId: number
+  birthdate?: string
+  grade?: string
+  countryOfIOL?: string
+  state?: string
+  city?: string
+  school?: string
+  languages?: string
+}
+
+interface StudentProfile {
+  grade: string
+  city: string
+  state: string
+  school?: string
+  countryOfIOL: string
+  birthdate: string
+  languages?: string
+  siteId?: number
+}
+
+interface User {
+  id: number
+  firstName: string
+  lastName: string
+  email: string
+  roleId: number
+  emailConfirmed: boolean
+  role: { name: string }
+  student?: StudentProfile
+}
+
+function ensureStudentFields(student?: StudentProfile): StudentProfile {
+  return {
+    grade: student?.grade || '',
+    city: student?.city || '',
+    state: student?.state || '',
+    school: student?.school || '',
+    countryOfIOL: student?.countryOfIOL || '',
+    birthdate: student?.birthdate || '',
+    languages: student?.languages || '',
+    siteId: student?.siteId ?? undefined,
+  }
+}
+
 export default function UsersAdminPage() {
   const { user, loading: authLoading } = useAuth()
+  const [users, setUsers] = useState<User[]>([])
+  const [editUser, setEditUser] = useState<User | null>(null)
+  const [formErrors, setFormErrors] = useState<Record<string, string>>({})
   const router = useRouter()
-  const [users, setUsers] = useState<any[]>([])
+
   const [loading, setLoading] = useState(true)
-  const [editUser, setEditUser] = useState<any | null>(null)
   const [deleteUserId, setDeleteUserId] = useState<number | null>(null)
   const [openAdd, setOpenAdd] = useState(false)
-  const [newUser, setNewUser] = useState({
+
+  const [newUser, setNewUser] = useState<NewUser>({
     firstName: '',
     lastName: '',
     email: '',
     password: '',
+    confirmPassword: '',
     roleId: 3,
     birthdate: '',
     grade: '',
@@ -47,7 +102,6 @@ export default function UsersAdminPage() {
     school: '',
     languages: '',
   })
-  const [formErrors, setFormErrors] = useState<any>({})
 
   useEffect(() => {
     if (!authLoading && (!user || user.roleId !== 1)) {
@@ -74,7 +128,7 @@ export default function UsersAdminPage() {
   }
 
   const validateForm = () => {
-    const errors: any = {}
+    const errors: Record<string, string> = {}
     if (!newUser.firstName.trim()) errors.firstName = 'First name is required'
     if (!newUser.lastName.trim()) errors.lastName = 'Last name is required'
     if (!/\S+@\S+\.\S+/.test(newUser.email))
@@ -124,12 +178,6 @@ export default function UsersAdminPage() {
   const handleDelete = async () => {
     if (!deleteUserId) return
     const token = localStorage.getItem('token')
-    console.log(
-      '🔗 Final delete URL:',
-      api.defaults.baseURL + `/users/${deleteUserId}`
-    )
-
-    console.log('🧾 Token from localStorage:', token)
     setAuthToken(token)
     try {
       await api.delete(`/users/${deleteUserId}`)
@@ -140,20 +188,29 @@ export default function UsersAdminPage() {
       alert('Failed to delete user.')
     }
   }
-  const handleEdit = (user: any) => {
+
+  const handleEdit = (user: User) => {
     setEditUser({
       ...user,
-      student: user.student || {
-        grade: '',
-        city: '',
-        state: '',
-        school: '',
-      },
+      student: ensureStudentFields(user.student),
     })
   }
+
+  const updateEditUserField = (field: keyof StudentProfile, value: string) => {
+    setEditUser((prev) => {
+      if (!prev) return null
+      return {
+        ...prev,
+        student: {
+          ...ensureStudentFields(prev.student),
+          [field]: value,
+        },
+      }
+    })
+  }
+
   const handleSave = async () => {
     if (!editUser) return
-
     try {
       await api.put(`/users/${editUser.id}`, {
         firstName: editUser.firstName,
@@ -163,7 +220,6 @@ export default function UsersAdminPage() {
           city: editUser.student?.city,
         },
       })
-
       await fetchUsers()
       setEditUser(null)
     } catch (err) {
@@ -171,6 +227,7 @@ export default function UsersAdminPage() {
       alert('Failed to update user.')
     }
   }
+
   const handleResendConfirmation = async (email: string) => {
     try {
       await api.post('/auth/resend-confirmation', { email })
@@ -285,32 +342,24 @@ export default function UsersAdminPage() {
             type="number"
             value={editUser?.student?.grade || ''}
             onChange={(e) =>
-              setEditUser((prev) =>
-                prev
-                  ? {
-                      ...prev,
-                      student: {
-                        ...prev.student,
-                        grade: Number(e.target.value),
-                      },
-                    }
-                  : null
-              )
+              setEditUser((prev) => {
+                if (!prev) return null
+
+                return {
+                  ...prev,
+                  student: {
+                    ...ensureStudentFields(prev.student),
+                    grade: e.target.value, // or Number(e.target.value) if grade is number
+                  },
+                }
+              })
             }
           />
+
           <TextField
             label="City"
             value={editUser?.student?.city || ''}
-            onChange={(e) =>
-              setEditUser((prev) =>
-                prev
-                  ? {
-                      ...prev,
-                      student: { ...prev.student, city: e.target.value },
-                    }
-                  : null
-              )
-            }
+            onChange={(e) => updateEditUserField('city', e.target.value)}
           />
         </DialogContent>
         <DialogActions>
