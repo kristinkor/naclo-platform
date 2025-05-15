@@ -24,6 +24,7 @@ import {
   Checkbox,
   ListItemText,
 } from '@mui/material'
+
 import { useRouter } from 'next/router'
 import { api, setAuthToken } from '../../utils/api'
 const LANGUAGES = [
@@ -277,8 +278,21 @@ export default function UsersAdminPage() {
   const handleAdd = async () => {
     if (!validateForm()) return
     try {
-      const payload = { ...newUser, confirmPassword: newUser.password }
+      const payload = {
+        ...newUser,
+        confirmPassword: newUser.password,
+        grade:
+          typeof newUser.grade === 'number'
+            ? newUser.grade
+            : parseInt(newUser.grade as any, 10) || 0,
+        languages: Array.isArray(newUser.languages)
+          ? (newUser.languages as string[]).join(',')
+          : newUser.languages,
+      }
+
       const res = await api.post('/auth/register', payload)
+      console.log('✅ Response from register:', res.data)
+
       setUsers((prev) => [...prev, res.data.user])
       setOpenAdd(false)
       setNewUser({
@@ -286,6 +300,7 @@ export default function UsersAdminPage() {
         lastName: '',
         email: '',
         password: '',
+        confirmPassword: '',
         roleId: 3,
         birthdate: '',
         grade: undefined,
@@ -333,7 +348,10 @@ export default function UsersAdminPage() {
     })
   }
 
-  const updateEditUserField = (field: keyof StudentProfile, value: string) => {
+  const updateEditUserField = (
+    field: keyof StudentProfile,
+    value: string | number
+  ) => {
     setEditUser((prev) => {
       if (!prev) return null
       return {
@@ -487,22 +505,42 @@ export default function UsersAdminPage() {
           <TextField
             label="Grade"
             type="number"
-            value={newUser.grade || ''}
+            value={editUser?.student?.grade ?? ''}
             onChange={(e) =>
-              setNewUser({
-                ...newUser,
-                grade: parseInt(e.target.value, 10) || 0,
-              })
+              updateEditUserField('grade', parseInt(e.target.value, 10) || 0)
             }
-            error={!!formErrors.grade}
-            helperText={formErrors.grade}
           />
-
           <TextField
             label="City"
             value={editUser?.student?.city || ''}
             onChange={(e) => updateEditUserField('city', e.target.value)}
           />
+
+          <FormControl fullWidth>
+            <InputLabel>Languages</InputLabel>
+            <Select
+              multiple
+              value={newUser.languages ? newUser.languages.split(',') : []}
+              onChange={(e) =>
+                setNewUser({
+                  ...newUser,
+                  languages: (e.target.value as string[]).join(','),
+                })
+              }
+              renderValue={(selected) => (selected as string[]).join(', ')}
+            >
+              {LANGUAGES.map((lang) => (
+                <MenuItem key={lang} value={lang}>
+                  <Checkbox
+                    checked={
+                      newUser.languages?.split(',').includes(lang) || false
+                    }
+                  />
+                  <ListItemText primary={lang} />
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setEditUser(null)}>Cancel</Button>
@@ -511,6 +549,7 @@ export default function UsersAdminPage() {
           </Button>
         </DialogActions>
       </Dialog>
+
       <Dialog open={!!deleteUserId} onClose={() => setDeleteUserId(null)}>
         <DialogTitle>Delete User</DialogTitle>
         <DialogContent>
@@ -674,13 +713,6 @@ export default function UsersAdminPage() {
                 value={newUser.city}
                 onChange={(e) =>
                   setNewUser({ ...newUser, city: e.target.value })
-                }
-              />
-              <TextField
-                label="School"
-                value={newUser.school}
-                onChange={(e) =>
-                  setNewUser({ ...newUser, school: e.target.value })
                 }
               />
               <FormControl fullWidth>
