@@ -167,11 +167,14 @@ export default function UsersAdminPage() {
         languages: '',
       })
       setFormErrors({})
-    } catch (error: any) {
-      console.error('Error adding user:', error.response?.data || error.message)
-      alert(
-        error.response?.data?.message || 'Failed to add user. Try again later.'
-      )
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error('Error adding user:', error.message)
+        alert(error.message)
+      } else {
+        console.error('Unexpected error adding user:', error)
+        alert('Failed to add user. Try again later.')
+      }
     }
   }
 
@@ -183,9 +186,14 @@ export default function UsersAdminPage() {
       await api.delete(`/users/${deleteUserId}`)
       setUsers((prev) => prev.filter((u) => u.id !== deleteUserId))
       setDeleteUserId(null)
-    } catch (err) {
-      console.error('Error deleting user:', err)
-      alert('Failed to delete user.')
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error('Error deleting user:', error.message)
+        alert('Failed to delete user.')
+      } else {
+        console.error('Unexpected error deleting user:', error)
+        alert('Unexpected error deleting user.')
+      }
     }
   }
 
@@ -222,9 +230,14 @@ export default function UsersAdminPage() {
       })
       await fetchUsers()
       setEditUser(null)
-    } catch (err) {
-      console.error('Error updating user:', err)
-      alert('Failed to update user.')
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error('Error updating user:', error.message)
+        alert('Failed to update user.')
+      } else {
+        console.error('Unexpected error updating user:', error)
+        alert('Unexpected error updating user.')
+      }
     }
   }
 
@@ -232,9 +245,14 @@ export default function UsersAdminPage() {
     try {
       await api.post('/auth/resend-confirmation', { email })
       alert(`Confirmation email sent to ${email}`)
-    } catch (err) {
-      console.error('Error resending confirmation:', err)
-      alert('Failed to resend confirmation email.')
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error('Error resending confirmation:', error.message)
+        alert('Failed to resend confirmation email.')
+      } else {
+        console.error('Unexpected error resending confirmation:', error)
+        alert('Unexpected error occurred.')
+      }
     }
   }
 
