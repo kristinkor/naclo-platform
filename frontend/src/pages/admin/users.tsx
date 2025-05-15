@@ -21,9 +21,138 @@ import {
   Select,
   InputLabel,
   FormControl,
+  Checkbox,
+  ListItemText,
 } from '@mui/material'
 import { useRouter } from 'next/router'
 import { api, setAuthToken } from '../../utils/api'
+const LANGUAGES = [
+  'English',
+  'Spanish',
+  'French',
+  'German',
+  'Chinese',
+  'Arabic',
+  'Russian',
+  'Japanese',
+  'Portuguese',
+  'Italian',
+  'Hindi',
+  'Korean',
+  'Vietnamese',
+  'Tagalog',
+  'Urdu',
+  'Hebrew',
+  'Greek',
+  'Turkish',
+  'Polish',
+  'Persian (Farsi)',
+  'Ukrainian',
+  'Thai',
+  'Bengali',
+  'Punjabi',
+  'Tamil',
+  'Telugu',
+  'Swahili',
+  'Romanian',
+  'Dutch',
+  'Serbian',
+  'Czech',
+  'Hungarian',
+  'Armenian',
+  'Amharic',
+  'Somali',
+  'Haitian Creole',
+  'Mandarin',
+  'Cantonese',
+  'Malay',
+  'Indonesian',
+  'Burmese',
+  'Khmer',
+  'Laotian',
+  'Nepali',
+  'Albanian',
+  'Bosnian',
+  'Mongolian',
+  'Pashto',
+  'Azerbaijani',
+  'Georgian',
+  'Zulu',
+  'Xhosa',
+  'Igbo',
+  'Yoruba',
+  'Tigrinya',
+  'Lingala',
+  'Hmong',
+]
+
+const US_STATES = [
+  { code: 'AL', name: 'Alabama' },
+  { code: 'AK', name: 'Alaska' },
+  { code: 'AZ', name: 'Arizona' },
+  { code: 'AR', name: 'Arkansas' },
+  { code: 'CA', name: 'California' },
+  { code: 'CO', name: 'Colorado' },
+  { code: 'CT', name: 'Connecticut' },
+  { code: 'DE', name: 'Delaware' },
+  { code: 'FL', name: 'Florida' },
+  { code: 'GA', name: 'Georgia' },
+  { code: 'HI', name: 'Hawaii' },
+  { code: 'ID', name: 'Idaho' },
+  { code: 'IL', name: 'Illinois' },
+  { code: 'IN', name: 'Indiana' },
+  { code: 'IA', name: 'Iowa' },
+  { code: 'KS', name: 'Kansas' },
+  { code: 'KY', name: 'Kentucky' },
+  { code: 'LA', name: 'Louisiana' },
+  { code: 'ME', name: 'Maine' },
+  { code: 'MD', name: 'Maryland' },
+  { code: 'MA', name: 'Massachusetts' },
+  { code: 'MI', name: 'Michigan' },
+  { code: 'MN', name: 'Minnesota' },
+  { code: 'MS', name: 'Mississippi' },
+  { code: 'MO', name: 'Missouri' },
+  { code: 'MT', name: 'Montana' },
+  { code: 'NE', name: 'Nebraska' },
+  { code: 'NV', name: 'Nevada' },
+  { code: 'NH', name: 'New Hampshire' },
+  { code: 'NJ', name: 'New Jersey' },
+  { code: 'NM', name: 'New Mexico' },
+  { code: 'NY', name: 'New York' },
+  { code: 'NC', name: 'North Carolina' },
+  { code: 'ND', name: 'North Dakota' },
+  { code: 'OH', name: 'Ohio' },
+  { code: 'OK', name: 'Oklahoma' },
+  { code: 'OR', name: 'Oregon' },
+  { code: 'PA', name: 'Pennsylvania' },
+  { code: 'RI', name: 'Rhode Island' },
+  { code: 'SC', name: 'South Carolina' },
+  { code: 'SD', name: 'South Dakota' },
+  { code: 'TN', name: 'Tennessee' },
+  { code: 'TX', name: 'Texas' },
+  { code: 'UT', name: 'Utah' },
+  { code: 'VT', name: 'Vermont' },
+  { code: 'VA', name: 'Virginia' },
+  { code: 'WA', name: 'Washington' },
+  { code: 'WV', name: 'West Virginia' },
+  { code: 'WI', name: 'Wisconsin' },
+  { code: 'WY', name: 'Wyoming' },
+]
+const CANADIAN_PROVINCES = [
+  { code: 'AB', name: 'Alberta' },
+  { code: 'BC', name: 'British Columbia' },
+  { code: 'MB', name: 'Manitoba' },
+  { code: 'NB', name: 'New Brunswick' },
+  { code: 'NL', name: 'Newfoundland and Labrador' },
+  { code: 'NS', name: 'Nova Scotia' },
+  { code: 'NT', name: 'Northwest Territories' },
+  { code: 'NU', name: 'Nunavut' },
+  { code: 'ON', name: 'Ontario' },
+  { code: 'PE', name: 'Prince Edward Island' },
+  { code: 'QC', name: 'Quebec' },
+  { code: 'SK', name: 'Saskatchewan' },
+  { code: 'YT', name: 'Yukon' },
+]
 
 export type NewUser = {
   firstName: string
@@ -499,24 +628,47 @@ export default function UsersAdminPage() {
                 error={!!formErrors.grade}
                 helperText={formErrors.grade}
               />
-              <TextField
-                label="Country of IOL"
-                value={newUser.countryOfIOL}
-                onChange={(e) =>
-                  setNewUser({ ...newUser, countryOfIOL: e.target.value })
-                }
-                error={!!formErrors.countryOfIOL}
-                helperText={formErrors.countryOfIOL}
-              />
-              <TextField
-                label="State"
-                value={newUser.state}
-                onChange={(e) =>
-                  setNewUser({ ...newUser, state: e.target.value })
-                }
-                error={!!formErrors.state}
-                helperText={formErrors.state}
-              />
+              <FormControl fullWidth error={!!formErrors.countryOfIOL}>
+                <InputLabel>Country</InputLabel>
+                <Select
+                  value={newUser.countryOfIOL}
+                  onChange={(e) =>
+                    setNewUser({
+                      ...newUser,
+                      countryOfIOL: e.target.value,
+                      state: '', // reset state if country changes
+                    })
+                  }
+                >
+                  <MenuItem value="USA">USA</MenuItem>
+                  <MenuItem value="Canada">Canada</MenuItem>
+                </Select>
+              </FormControl>
+              <FormControl fullWidth error={!!formErrors.state}>
+                <InputLabel>State / Province</InputLabel>
+                <Select
+                  value={newUser.state}
+                  onChange={(e) =>
+                    setNewUser({ ...newUser, state: e.target.value })
+                  }
+                  disabled={!newUser.countryOfIOL}
+                >
+                  {(newUser.countryOfIOL === 'Canada'
+                    ? CANADIAN_PROVINCES
+                    : US_STATES
+                  ).map(({ code, name }) => (
+                    <MenuItem key={code} value={code}>
+                      {code} – {name}
+                    </MenuItem>
+                  ))}
+                </Select>
+                {formErrors.state && (
+                  <Typography variant="caption" color="error">
+                    {formErrors.state}
+                  </Typography>
+                )}
+              </FormControl>
+
               <TextField
                 label="City"
                 value={newUser.city}
@@ -531,13 +683,29 @@ export default function UsersAdminPage() {
                   setNewUser({ ...newUser, school: e.target.value })
                 }
               />
-              <TextField
-                label="Languages"
-                value={newUser.languages}
-                onChange={(e) =>
-                  setNewUser({ ...newUser, languages: e.target.value })
-                }
-              />
+              <FormControl fullWidth>
+                <InputLabel>Languages</InputLabel>
+                <Select
+                  multiple
+                  value={newUser.languages ? newUser.languages.split(',') : []}
+                  onChange={(e) =>
+                    setNewUser({
+                      ...newUser,
+                      languages: (e.target.value as string[]).join(','),
+                    })
+                  }
+                  renderValue={(selected) => (selected as string[]).join(', ')}
+                >
+                  {LANGUAGES.map((lang) => (
+                    <MenuItem key={lang} value={lang}>
+                      <Checkbox
+                        checked={newUser.languages?.split(',').includes(lang)}
+                      />
+                      <ListItemText primary={lang} />
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
             </>
           )}
         </DialogContent>
